@@ -1,0 +1,54 @@
+extends ../../layouts/common
+block content 
+     
+     .p-5.shadow-sm.bg-white
+          .active.mb-5
+               h2.h2 Đang hoạt động
+               table.table.inactive.border
+                    thead
+                         tr
+                              th #
+                              th Ngày thi
+                              th Số lượng
+                              th Còn lại
+                              th
+                    tbody
+                         if activeExams
+                              each exam, index in activeExams
+                                   tr
+                                        td #{index + 1}
+                                        td exam.date
+                                        td exam.slot
+                                        td exam.remaining
+                         else
+                              tr 
+                                   td.text-center.text-muted.fw-bold(colspan=4) Không có dữ liệu
+          hr
+          .history 
+               .d-flex.justify-content-between.align-items-center.mb-2
+                    h2.h2 Lịch sử đợt thi
+                    button.btn.btn-primary#create-btn
+                         i.bi.bi-plus-lg.me-2
+                         span Tạo
+               table.table.inactive.border
+                    thead
+                         tr
+                              th #
+                              th Ngày thi
+                              th Số lượng
+                              th Còn lại
+                              th
+                    tbody
+                         if exams 
+                              each exam, index in exams
+                                   tr
+                                        td #{index + 1}
+                                        td exam.date
+                                        td exam.slot
+                                        td exam.remaining
+                         else
+                              tr 
+                                   td.text-center.text-muted.fw-bold(colspan=4) Không có dữ liệu
+
+block script
+     script(src="/public/js/exams.js")

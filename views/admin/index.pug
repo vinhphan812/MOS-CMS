@@ -1,0 +1,25 @@
+extends ../layouts/common
+
+block content
+    h1 admin
+    .row.mb-4
+        .col-md-6
+            a.card.align-items-center.text-decoration-none(href="#")
+                img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
+                .card-body.text-center
+                    h5.card-title.text-black Quản lý môn học
+                    p.card-text.text-muted Quản lý môn học
+
+        .col-md-6
+            a.card.align-items-center.text-decoration-none(href="/admin/exams.js")
+                img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
+                .card-body.text-center
+                    h5.card-title.text-black Đợt Đăng Ký
+                    p.card-text.text-muted Quản lý đợt đăng ký thi
+    .row
+        .col-md-6
+            a.card.align-items-center.text-decoration-none(href="/admin/times")
+                img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
+                .card-body.text-center
+                    h5.card-title.text-black Giờ Thi
+                    p.card-text.text-muted Quản lý các giờ thi cố định

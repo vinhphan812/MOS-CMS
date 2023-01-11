@@ -1,0 +1,10 @@
+extends ../../layouts/common.pug
+
+block content
+     .p-5.shadow-sm.bg-white
+          .mb-3 
+               label(for="date").form-label date
+               input(type="date" id="date").form-control
+          if recommand
+               each date in recommand 
+                    button.btn.btn-primary.me-2= date

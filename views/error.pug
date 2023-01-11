@@ -1,0 +1,7 @@
+extends ./layouts/common
+
+block content
+    .d-flex.justify-content-center.align-items-center.flex-column
+        i.bi.bi-exclamation-triangle-fill(style="font-size: 100px")
+        h1 #{error.status} #{message}
+        p   re #{error.stack}

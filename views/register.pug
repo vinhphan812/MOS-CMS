@@ -1,0 +1,77 @@
+extends ./layouts/common
+
+block content
+    form(action="/register" method="POST").bg-white.p-5.shadow-sm
+        h1.h1.text-center Đăng kí thi
+        if errors && errors.length
+            each val in errors
+                .alert.alert-danger.mx-5= val
+        .row.justify-content-center
+            .col-md-8
+                .row.mb-2
+                    input.form-control(type='text' name="fullname" placeholder="Họ và tên" value=body ? body.fullname : "")
+                .row.mb-2
+                    .col-md-8.p-0.pe-2
+                        input.col-md-6.form-control(type="text" name="idCardNumber" placeholder="CCCD/CMND" value=body ? body.idCardNumber : "")
+                    .col-md-4.p-0
+                        input.col-md-6.form-control(type="date" name="birthday" placeholder="Ngày sinh" value=body ? body.birthday : "")
+                .row.mb-2
+                    .col-md-8.p-0.pe-2
+                        input.form-control(type="text" name="phone" placeholder="Số điện thoại" value=body ? body.phone : "")
+                    .col-md-4.p-0.d-flex.align-items-center
+                        .form-check.form-check-inline
+                            input.form-check-input(type="radio" id="male" name="gender" value="male")
+                            label.form-check-label(for="male") Nam
+                        .form-check.form-check-inline
+                            input.form-check-input(type="radio" id="female" name="gender" value="female")
+                            label.form-check-label(for="female") Nữ
+                .row.mb-2
+                    input.col-md-6.form-control(type="email" name="email" placeholder="Email" value=body ? body.email : "")
+                .list-group.my-3
+                    .list-group-item
+                        .row
+                            .col-md-6
+                                .checker
+                                    input(type="checkbox" id="word")
+                                    label(for="word")
+                                        img(src="/public/images/word.svg" alt="word")
+                            .col-md-6.d-flex.align-items-center.justify-content-center
+                                .row.w-100
+                                    .col-md-8
+                                        select.form-select(name="dateforword")
+                                            option abc
+                                    .col-md-4
+                                        select.form-select(name="timeforword")
+                                            option abc
+                    .list-group-item
+                        .row
+                            .col-md-6
+                                .checker
+                                    input(type="checkbox" id="excel")
+                                    label(for="excel")
+                                        img(src="/public/images/excel.svg" alt="excel")
+                            .col-md-6.d-flex.align-items-center.justify-content-center
+                                .row.w-100
+                                    .col-md-8
+                                        select.form-select(name="dateforexcel")
+                                            option abc
+                                    .col-md-4
+                                        select.form-select(name="timeforexcel")
+                                            option abc
+                    .list-group-item
+                        .row
+                            .col-md-6
+                                .checker
+                                    input(type="checkbox" id="powerpoint")
+                                    label(for="powerpoint")
+                                        img(src="/public/images/powerpoint.svg" alt="powerpoint")
+                            .col-md-6.d-flex.align-items-center.justify-content-center
+                                .row.w-100
+                                    .col-md-8
+                                        select.form-select(name="dateforppt")
+                                            option abc
+                                    .col-md-4
+                                        select.form-select(name="timeforppt")
+                                            option abc
+
+                input.form-control.mb-2.btn.btn-primary(type="submit" value="Đăng ký")

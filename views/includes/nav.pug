@@ -1,0 +1,30 @@
+nav.navbar.navbar-expand-lg.navbar-dark.dark.text-light
+    .container
+        a.navbar-brand(href='/').d-flex.justify-content-center.align-items-center
+            img(src="" alt="logo").me-2.rounded.mx-auto.d-block
+            span.fw-italic.fs-3 #{APP_NAME.split(" ")[0]}
+            span.fw-bold.fs-3 #{APP_NAME.split(" ")[1]}
+        button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
+            span.navbar-toggler-icon
+        #navbarSupportedContent.collapse.navbar-collapse
+            ul.navbar-nav.me-auto.mb-2.mb-lg-0
+                if menu
+                    for item in menu
+                        li.nav-item
+                            a.nav-link.active(aria-current='page' href=item.link)= item.name
+            .d-flex.mb-lg-0.mb-2
+                if !isLogin
+                    if user
+                        .dropdown
+                            button#user-dropdown.btn.btn-light.dropdown-toggle(type='button' data-bs-toggle='dropdown' aria-expanded='false')
+                                img.user-avatar-small(src=user.avatar ? user.avatar : `/public/images/TEACHER.png` alt=user.name)
+                                span= user.name
+                            ul.dropdown-menu(aria-labelledby='user-dropdown')
+                                li
+                                    a.dropdown-item(href='/user/profile') Hồ sơ
+                                li
+                                    a.dropdown-item(href='/logout') Đăng xuất
+                    else
+                        if !listNotDisplaySignNav.includes(path)
+                            .px-2.d-flex.align-items-center
+                                a.text-light(href="/login") Đăng nhập
