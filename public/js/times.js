@@ -129,7 +129,7 @@ class TimesUI extends UIBase {
         );
         Swal.resetValidationMessage();
 
-        const time = moment(e).format("HH:mmg");
+        const time = moment(e).format("HH:mm");
 
         try {
             const res = await TimesModel.validateTime(time);
