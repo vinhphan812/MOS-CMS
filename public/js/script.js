@@ -16,7 +16,7 @@ function Alert(title, text, confirmButtonText, icon = "error") {
     });
 }
 
-function confirmDelete(name = "thành phânf", cb) {
+function confirmDelete(name = "thành phân", cb) {
     Swal.fire({
         customClass: {
             confirmButton: "btn btn-success mx-2",

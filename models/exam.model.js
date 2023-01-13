@@ -7,7 +7,7 @@ const examSchema = new Schema(
 	{
 		subject: { type: Schema.Types.ObjectId, ref: "SUBJECT" },
 		date: Date,
-		time: Date,
+		time: { type: Schema.Types.ObjectId, ref: "TIMES" },
 		slot: { type: Number, default: 0 },
 		remaining: { type: Number, default: 0 },
 	},

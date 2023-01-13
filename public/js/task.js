@@ -1,12 +1,30 @@
+let UI;
+
 class Base {
 	static create() {
-		console.warn("Not Support Method");
+		console.warn("Not Support Create");
 	}
 	static remove() {
-		console.warn("Not Support Method");
+		console.warn("Not Support Remove");
 	}
 	static update() {
-		console.warn("Not Support Method");
+		console.warn("Not Support Update");
+	}
+}
+
+class UIBase extends Base {
+	static init() {
+		this.addEvent();
+		this.addAction();
+		return this;
+	}
+
+	static addEvent() {
+		console.warn("Not Support Event");
+	}
+
+	static addAction() {
+		console.warn("Not Support Action");
 	}
 }
 
@@ -16,7 +34,10 @@ class BaseModel extends Base {
 		createTime: "create_time",
 		updateTime: "update_time",
 		listTime: "list_time",
-		IIG: "iig"
+		IIG: "iig",
+		createExam: "create_exam",
+		checkExam: "check_exam", removeTime: "remove_time"
+
 	};
 	static fetchAPI(method, body) {
 		return new Promise(async (resolve, reject) => {

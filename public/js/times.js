@@ -1,13 +1,8 @@
 // Onload is a start programs
 Onload = () => {
-    $("#create-btn").click(TimesUI.create);
-    addAction();
+    UI = TimesUI.init();
 };
 
-function addAction() {
-    $(".delete").click(TimesUI.remove);
-    $(".edit").click(TimesUI.update);
-}
 
 function htmlForm(id = "create") {
     return `<form id="${ id }">
@@ -24,7 +19,12 @@ function rowUI(data, index) {
         <tr id="${ data._id }">
             <td>${ index }</td>
             <td>${ data.time }</td>
-            <td>${ data.is_delete ? "Ngưng hoạt động" : "Hoạt động" }</td>
+            <td class="cell-vetical-center">
+                <div>
+                    <div class="dot rounded-circle mx-2 ${ data.is_delete ? "bg-danger" : "bg-success" }"></div>
+                    <span>${ data.is_delete ? "Ngưng hoạt động" : "Hoạt động" }</span>
+                </div>
+            </td>
             <td>
                 <button class="btn btn-link edit bi bi-pencil-fill text-warning"></button>
                 <button class="btn btn-link delete bi bi-trash text-danger"></button>
@@ -33,7 +33,7 @@ function rowUI(data, index) {
     `
 }
 
-class TimesUI extends Base {
+class TimesUI extends UIBase {
     static create(e) {
         const addCreateEvent = () => {
             const timepicker = $(".timepicker");
@@ -85,8 +85,6 @@ class TimesUI extends Base {
 
             const timeData = $timepicker.data("TimePicker");
 
-            console.log(moment("01/01/2023 " + value).toDate())
-
             timeData.widget.setTime(
                 timeData,
                 moment("01/01/2023 " + value).toDate(),
@@ -117,6 +115,8 @@ class TimesUI extends Base {
     }
 
     static remove(e) {
+        const id = e.target.parentNode.parentNode.id;
+        confirmDelete("Giờ", () => TimesService.remove(id));
     }
 
     static async validateTimeEvent(e) {
@@ -158,10 +158,20 @@ class TimesUI extends Base {
                 $table.append(rowUI(item, $table.children().length + 1));
             }
 
-            addAction();
+
+            this.addAction();
         } catch (e) {
             console.log(e);
         }
+    }
+
+    static addAction() {
+        $(".delete").click(TimesUI.remove);
+        $(".edit").click(TimesUI.update);
+    }
+
+    static addEvent() {
+        $("#create-btn").click(TimesUI.create);
     }
 }
 
@@ -189,7 +199,7 @@ class TimesService extends Base {
                 </td>
             </tr>
         `);
-            addAction();
+            UI.addAction();
         } catch (err) {
             return Alert("Error", err.message, "OK", "error");
         }
@@ -211,8 +221,14 @@ class TimesService extends Base {
         }
     }
 
-    static remove() {
-        super.remove();
+    static async remove(id) {
+        try {
+            const res = await TimesModel.remove(id);
+            Alert("Success", res.message, "OK", "success");
+            await TimesUI.loadList();
+        } catch (e) {
+            return Alert("Error", e.message, "OK", "error");
+        }
     }
 }
 
@@ -227,6 +243,10 @@ class TimesModel extends BaseModel {
 
     static update(id, time) {
         return this.fetchAPI(this.task.updateTime, { time, id });
+    }
+
+    static remove(id) {
+        return this.fetchAPI(this.task.removeTime, { id })
     }
 
     static list() {

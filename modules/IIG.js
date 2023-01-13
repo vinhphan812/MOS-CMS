@@ -37,7 +37,7 @@ class IIG {
 				if (moment(date, "DD/MM/YYYY") > currentDate)
 					result.push(date);
 			});
-			return result;
+			return result.sort();
 		}
 	}
 }
