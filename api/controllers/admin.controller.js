@@ -11,6 +11,7 @@ module.exports = {
             const data = await doingTask(args);
             res.json(data)
         } catch (e) {
+            console.log(e)
             res.json({ success: false, message: e.message })
         }
     },

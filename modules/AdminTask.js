@@ -13,8 +13,24 @@ function checkValidTime(time) {
 
 function checkValidDate(date) {
     if (new Date() > new Date(date)) {
-        throw new Error("Current Date Expired");
+        const error = new Error("Current Date Expired");
+        error.data = { ex: ["date"] };
+
+        throw error;
     }
+}
+
+function newDate(dateString) {
+    dateString = dateString.split("/").join("-") + " 00:00:00";
+    return moment(dateString).toDate();
+}
+
+function success(args) {
+    return { success: true, ...args }
+}
+
+function fail(args) {
+    return { success: false, ...args }
 }
 
 module.exports.AdminTask = {
@@ -25,13 +41,13 @@ module.exports.AdminTask = {
         if (data) {
             throw new Error("times is existed");
         }
-        return { success: true, message: "not existed" };
+        return success({ message: "not existed" });
     },
     create_time: async ({ time }) => {
         checkValidTime(time);
 
         const data = await Times.create({ time });
-        return { success: true, message: "create success", data };
+        return success({ message: "create success", data });
     },
     update_time: async ({ id, time }) => {
         checkValidTime(time);
@@ -45,37 +61,55 @@ module.exports.AdminTask = {
             }
         );
 
-        return { success: true, message: "update success", data };
+        return success({ message: "update success", data });
     },
     remove_time: async ({ id }) => {
 
         await Times.updateOne({ _id: id }, { $set: { is_delete: true } })
 
-        return { success: true, message: "Remove success" };
+        return success({ message: "Remove success" });
     },
     list_time: async () => {
         const data = await Times.find({}, { _id: 1, time: 1, is_delete: 1 }).sort({
             is_delete: 1,
             time: 1,
         });
-        return { success: true, data };
+        return success({ data });
     },
 
     iig: async () => {
         const data = await IIG.getSchedules();
 
-        return { success: true, data };
+        return success({ data });
     },
 
     check_exam: async ({ date, time }) => {
-        date = date.split("/").reverse().join("-")
-        checkValidDate(date);
-        const exam = await Exam.findOne({ date: new Date(date), time });
-        if (exam)
-            return { success: false, message: "Exam is existed!" };
-        return { success: true, message: "not existed" }
-    },
-    create_exam: async () => {
+        try {
+            date = newDate(date)
 
+            checkValidDate(date);
+
+            const exam = await Exam.findOne({ date: date, time });
+
+            if (exam) return { success: false, message: "EXAM EXISTED", data: { ex: ["date", "time"] } }
+
+            return success({ message: "not existed" })
+        } catch ({ message, data }) {
+            return fail({ message, data });
+        }
+    },
+    create_exam: async ({ time, date, slot }) => {
+        date = newDate(date);
+        slot = +slot;
+
+        if (slot == NaN) return { success: false, message: "QUANTITY INVALID", data: { ex: ["slot"] } };
+
+        const existed = await Exam.findOne({ date: date, time });
+
+        if (existed) return { success: false, message: "EXAM EXISTED", data: { ex: ["date", "time"] } }
+
+        const data = await Exam.create({ date: date, time, slot });
+
+        return success({ data, message: "Created" });
     }
 };

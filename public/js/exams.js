@@ -12,16 +12,16 @@ function htmlForm(id = "create") {
                 <datalist id="iig"></datalist>
             </div>
             <div class="mb-3 form-floating">
-                <select id="begin_time" class="form-select" aria-label="Begin Time">
+                <select id="time" class="form-select" aria-label="Begin Time">
                     <option selected>Không có</option>
                 </select>
-                <label for="begin_time">Giờ thi</label>
+                <label for="time">Giờ thi</label>
                 <span class="status"></span>
             </div>
             <div class="mb-3 form-floating">
-                <input class="quantity form-control" id="quantity" placeholder="number"/>
+                <input class="form-control" id="slot" placeholder="number"/>
                 <span class="status"></span>
-                <label for="quantity">Số lượng</label>
+                <label for="slot">Số lượng</label>
             </div>
         </form>`;
 }
@@ -29,17 +29,20 @@ function htmlForm(id = "create") {
 class ExamsUI extends UIBase {
     static async create() {
         const is_enabled = {
-            date: false,
-            time: false,
-            quantity: false,
-            check: function () {
-                Swal.getConfirmButton().disabled = !(
-                    this.date &&
-                    this.time &&
-                    this.quantity
-                );
-                if (this.date && this.time) {
-                    ExamsService.validate();
+            date: false, time: false, slot: false, check: function (type) {
+                Swal.getConfirmButton().disabled = !(this.date && this.time && this.slot);
+                if (this.date && this.time && type != "slot") {
+                    ExamsService.validate().then((ex) => {
+                        if (ex.success) return;
+
+                        if (typeof ex == "object" && !ex.success && ex.data && ex.data.ex && ex.data.ex.length > 0) {
+                            for (const el of ex.data.ex) {
+                                this[el] = false;
+                                $IV("#" + el).setValid(false);
+                            }
+                            this.check();
+                        }
+                    })
                 }
             },
         };
@@ -47,51 +50,39 @@ class ExamsUI extends UIBase {
             const addCreateEvent = () => {
                 is_enabled.check();
 
-                $("#begin_time").change((e) => {
-                    const $input = $(e.target);
+                $("#time").change((e) => {
+                    const $input = $IV(e.target);
                     const time = $input.val();
-                    $input
-                        .removeClass("is-invalid")
-                        .removeClass("is-valid");
+
+                    $input.clearValidate();
 
                     is_enabled.time = !!time && time != "Không có";
                     is_enabled.check();
-                    $input.addClass(
-                        is_enabled.time ? "is-valid" : "is-invalid"
-                    );
+                    $input.setValid(is_enabled.time);
                 });
 
-                $("#quantity").change((e) => {
-                    const $input = $(e.target);
-                    const quantity = +$input.val();
-                    $input
-                        .removeClass("is-invalid")
-                        .removeClass("is-valid");
+                $("#slot").change((e) => {
+                    const $input = $IV(e.target);
+                    const slot = +$input.val();
+                    $input.clearValidate();
 
-                    is_enabled.quantity =
-                        !!quantity && /\d/g.test(quantity);
-                    is_enabled.check();
-                    $input.addClass(
-                        is_enabled.quantity ? "is-valid" : "is-invalid"
-                    );
+                    is_enabled.slot = !!slot && /^\d/g.test(slot);
+
+                    is_enabled.check("slot");
+
+                    $input.setValid(is_enabled.slot);
                 });
 
                 $("#date").change((e) => {
-                    const $input = $(e.target);
+                    const $input = $IV(e.target);
                     const date = $input.val();
-                    $input
-                        .removeClass("is-invalid")
-                        .removeClass("is-valid");
+                    $input.clearValidate();
 
-                    is_enabled.date =
-                        new Date(date) &&
-                        /(\d{2}|\d{1})\/(\d{2}|\d{1})\/\d{4}/g.test(date);
+                    is_enabled.date = new Date(date) && /(\d{2}|\d{1})\/(\d{2}|\d{1})\/\d{4}/g.test(date);
 
                     is_enabled.check();
 
-                    $input.addClass(
-                        is_enabled.date ? "is-valid" : "is-invalid"
-                    );
+                    $input.setValid(is_enabled.date);
                 });
             };
             ExamsModel.IIGRecommend().then(({ data }) => {
@@ -103,12 +94,10 @@ class ExamsUI extends UIBase {
             });
 
             ExamsModel.listTime().then(({ data }) => {
-                const $select = $("select#begin_time");
+                const $select = $("select#time");
 
                 for (const item of data) {
-                    $select.append(
-                        `<option value="${ item._id }">${ item.time }</option>`
-                    );
+                    $select.append(`<option value="${ item._id }">${ item.time }</option>`);
                 }
             });
 
@@ -141,11 +130,9 @@ class ExamsUI extends UIBase {
 class ExamsService extends Base {
     static async create() {
         try {
-            const date = $("#date").val(),
-                time = $("#begin_time").val(),
-                quantity = $("#quantity").val();
+            const date = $("#date").val(), time = $("#time").val(), slot = $("#slot").val();
 
-            const res = await ExamsModel.create(date, time, quantity);
+            const res = await ExamsModel.create(date, time, slot);
 
             Alert("Success", res.message, "OK", "success");
         } catch (e) {
@@ -156,18 +143,19 @@ class ExamsService extends Base {
     static async validate() {
         try {
             Swal.resetValidationMessage();
-            const date = $("#date").val(),
-                time = $("#begin_time").val();
-            await ExamsModel.validate(date, time);
+            const date = $("#date").val(), time = $("#time").val();
+            const data = await ExamsModel.validate(date, time);
+            return data;
         } catch (e) {
             Swal.showValidationMessage(e.message);
+            return e;
         }
     }
 }
 
 class ExamsModel extends BaseModel {
-    static create(date, time, quantity) {
-        return this.fetchAPI(this.task.createExam, { date, quantity, time });
+    static create(date, time, slot) {
+        return this.fetchAPI(this.task.createExam, { date, slot, time });
     }
 
     static IIGRecommend() {
