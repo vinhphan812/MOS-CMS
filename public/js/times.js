@@ -3,6 +3,7 @@ Onload = () => {
     UI = TimesUI.init();
 };
 
+const dataURL = "/api/admin/times";
 
 function htmlForm(id = "create") {
     return `<form id="${ id }">
@@ -14,26 +15,9 @@ function htmlForm(id = "create") {
         </form>`;
 }
 
-function rowUI(data, index) {
-    return `
-        <tr id="${ data._id }">
-            <td>${ index }</td>
-            <td>${ data.time }</td>
-            <td class="cell-vetical-center">
-                <div>
-                    <div class="dot rounded-circle mx-2 ${ data.is_delete ? "bg-danger" : "bg-success" }"></div>
-                    <span>${ data.is_delete ? "Ngưng hoạt động" : "Hoạt động" }</span>
-                </div>
-            </td>
-            <td>
-                <button class="btn btn-link edit bi bi-pencil-fill text-warning"></button>
-                <button class="btn btn-link delete bi bi-trash text-danger"></button>
-            </td>
-        </tr>
-    `
-}
-
 class TimesUI extends UIBase {
+    static table = null;
+
     static create(e) {
         const addCreateEvent = () => {
             const timepicker = $(".timepicker");
@@ -91,11 +75,11 @@ class TimesUI extends UIBase {
                 true
             );
         }
-        const id = e.target.parentNode.parentNode.id;
+        const id = arguments[1] || e.target.parentNode.parentNode.id;
         const value = $(
             "td:nth-child(2)",
             e.target.parentNode.parentNode
-        ).text();
+        ).text() || arguments[2];
 
         Swal.fire({
             ...swalDefaultConfig,
@@ -112,11 +96,6 @@ class TimesUI extends UIBase {
         });
 
 
-    }
-
-    static remove(e) {
-        const id = e.target.parentNode.parentNode.id;
-        confirmDelete("Giờ", () => TimesService.remove(id));
     }
 
     static async validateTimeEvent(e) {
@@ -144,34 +123,63 @@ class TimesUI extends UIBase {
 
     static async loadList() {
         try {
-            const $table = $(".table tbody");
-
-            if (!$table) return console.log(".table not contain");
-
-            $table.children().remove();
-
-            const { data } = await TimesModel.list();
-
-            if (data.length < 0) return;
-
-            for (const item of data) {
-                $table.append(rowUI(item, $table.children().length + 1));
-            }
-
-
-            this.addAction();
+            if (this.table)
+                this.table.setData("http://localhost:3010/api/admin/times");
         } catch (e) {
             console.log(e);
         }
     }
 
-    static addAction() {
-        $(".delete").click(TimesUI.remove);
-        $(".edit").click(TimesUI.update);
-    }
-
     static addEvent() {
         $("#create-btn").click(TimesUI.create);
+
+        this.table = new Tabulator("#example-table", {
+            data: [],
+            layout: "fitColumns",
+            minHeight: "200px",
+            index: "ID",
+            ajaxURL: "http://localhost:3010/api/admin/times",
+            columns: [
+                { title: "ID", field: "_id", visible: false },
+                {
+                    title: "Giờ thi", field: "time", editor: dateEditor
+                },
+                {
+                    title: "Trạng thái",
+                    field: "is_delete",
+                    editor: "list",
+                    formatter: function (cell, formatterParams) {
+                        let value = cell.getValue();
+                        if (value == "") {
+                            value = cell.getOldValue();
+                            cell.restoreOldValue();
+                        }
+
+                        if (typeof value == "string")
+                            value = JSON.parse(value);
+                        return `<div class="d-flex align-items-center h-100"><div class="dot rounded-circle mx-2 ${ value ? "bg-danger" : "bg-success" }"></div><span>${ value ? "Ngưng Hoạt động" : "hoạt động" }</span></div>`;
+                    },
+                    editorParams: {
+                        values: { true: "Ngưng hoạt động", false: "Hoạt động" }
+                    },
+                    cellEdited: function (cell) {
+                        const data = cell.getData();
+                        if(typeof data.is_delete == "string")
+                            data.is_delete = JSON.parse(data.is_delete);
+                        TimesModel.updateStatus(data._id, data.is_delete);
+                    }
+                }
+            ],
+            initialSort: [
+                { column: "time", dir: "asc" },
+                { column: "is_delete", dir: "asc" },
+            ]
+        });
+
+        this.table.on("tableBuilt", () => {
+            this.loadList();
+        });
+        // this.loadList();
     }
 }
 
@@ -184,22 +192,7 @@ class TimesService extends Base {
 
             Alert("Success", res.message, "OK", "success");
 
-            const table = $(".table > tbody");
-
-            $("tr:not([id])", table).remove();
-
-            table.append(`
-            <tr id="${ res.data._id }">
-                <td>${ table.children().length + 1 }</td>
-                <td>${ res.data.time }</td>
-                <td>${ res.data.is_delete ? "Ngưng hoạt động" : "Hoạt động" }</td>
-                <td>
-                    <button class="btn btn-link edit bi bi-pencil-fill text-warning"></button>
-                    <button class="btn btn-link delete bi bi-trash text-danger"></button>
-                </td>
-            </tr>
-        `);
-            UI.addAction();
+            UI.loadList();
         } catch (err) {
             return Alert("Error", err.message, "OK", "error");
         }
@@ -241,8 +234,12 @@ class TimesModel extends BaseModel {
         return this.fetchAPI(this.task.createTime, { time });
     }
 
-    static update(id, time) {
+    static update(id, time, is_delete) {
         return this.fetchAPI(this.task.updateTime, { time, id });
+    }
+
+    static updateStatus(id, is_delete) {
+        return this.fetchAPI(this.task.updateTimeStatus, { is_delete, id });
     }
 
     static remove(id) {
@@ -253,3 +250,11 @@ class TimesModel extends BaseModel {
         return this.fetchAPI(this.task.listTime)
     }
 }
+
+const dateEditor = function (cell, onRendered, success, cancel, editorParams) {
+    const el = cell.getElement();
+    const data = cell.getData();
+    TimesUI.update({ target: el }, data._id, data.time);
+};
+
+

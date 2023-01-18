@@ -68,6 +68,7 @@ class BaseModel extends Base {
         checkTime: "check_time",
         createTime: "create_time",
         updateTime: "update_time",
+        updateTimeStatus: "update_status_time",
         listTime: "list_time",
         IIG: "iig",
         createExam: "create_exam",

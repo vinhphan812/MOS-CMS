@@ -8,29 +8,30 @@ block content
                 button.btn.btn-primary(id="create-btn")
                     i.bi.bi-plus-lg.me-2
                     span Tạo
-            table.table.inactive.border
-                thead
-                    tr
-                        th #
-                        th Giờ thi
-                        th Trạng thái
-                        th
-                tbody
-                    if times && times.length > 0
-                         each time, index in times
-                             tr(id=time.id)
-                                 td #{index + 1}
-                                 td #{time.time}
-                                 td.cell-vetical-center
-                                    div.d-flex.align-items-center
-                                        div.dot.rounded-circle.mx-2(class=`${time.is_delete ? "bg-danger" : "bg-success"}`)
-                                        span #{time.is_delete ? "Ngưng hoạt động" : "Hoạt động"}
-                                 td
-                                     button.btn.btn-link.delete.bi.bi-pencil-fill.text-warning.edit
-                                     button.btn.btn-link.delete.bi.bi-trash.text-danger
-                    else
-                        tr
-                            td.text-center.text-muted.fw-bold(colspan=4) Không có dữ liệu
+            #example-table
+            //table.table.inactive.border
+            //    thead
+            //        tr
+            //            th #
+            //            th Giờ thi
+            //            th Trạng thái
+            //            th
+            //    tbody
+            //        if times && times.length > 0
+            //             each time, index in times
+            //                 tr(id=time.id)
+            //                     td #{index + 1}
+            //                     td #{time.time}
+            //                     td.cell-vetical-center
+            //                        div.d-flex.align-items-center
+            //                            div.dot.rounded-circle.mx-2(class=`${time.is_delete ? "bg-danger" : "bg-success"}`)
+            //                            span #{time.is_delete ? "Ngưng hoạt động" : "Hoạt động"}
+            //                     td
+            //                         button.btn.btn-link.delete.bi.bi-pencil-fill.text-warning.edit
+            //                         button.btn.btn-link.delete.bi.bi-trash.text-danger
+            //        else
+            //            tr
+            //                td.text-center.text-muted.fw-bold(colspan=4) Không có dữ liệu
 
 block script
     script(src="/public/js/times.js")

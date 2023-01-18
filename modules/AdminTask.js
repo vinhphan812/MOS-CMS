@@ -21,7 +21,8 @@ function checkValidDate(date) {
 }
 
 function newDate(dateString) {
-    dateString = dateString.split("/").join("-") + " 00:00:00";
+    dateString = dateString.split("/").reverse().join("-") + " 00:00:00";
+    console.log(dateString);
     return moment(dateString).toDate();
 }
 
@@ -63,6 +64,10 @@ module.exports.AdminTask = {
 
         return success({ message: "update success", data });
     },
+    update_status_time: async ({ id, is_delete }) => {
+        const data = await Times.updateOne({ _id: id }, { $set: { is_delete } });
+        return success({ message: "update status success", data });
+    },
     remove_time: async ({ id }) => {
 
         await Times.updateOne({ _id: id }, { $set: { is_delete: true } })
@@ -85,7 +90,9 @@ module.exports.AdminTask = {
 
     check_exam: async ({ date, time }) => {
         try {
+            console.log(date);
             date = newDate(date)
+            console.log(date);
 
             checkValidDate(date);
 

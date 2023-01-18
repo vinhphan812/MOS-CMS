@@ -4,6 +4,12 @@ module.exports = {
         res.json({ success: true, message: "ADMIN" });
     },
 
+    timeList: async (req, res, next) => {
+        const data = await Times.find({});
+
+        res.json(data);
+    },
+
     doing: async (req, res, next) => {
         const { doingTask, args } = res.locals;
 

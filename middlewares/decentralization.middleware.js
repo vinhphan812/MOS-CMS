@@ -18,7 +18,7 @@ module.exports = {
 						_id: userId,
 					})
 				).role;
-			else return res.redirect("/sign_in");
+			else return res.redirect("/login");
 
 			if (PERMISSIONS[userPerms] < PERMISSIONS[perms || ROLE.CUSTOMER])
 				return res.status(403).render("errors/404");
