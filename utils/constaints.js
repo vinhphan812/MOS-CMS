@@ -1,5 +1,3 @@
-const moment = require("moment");
-
 const SCHEMA_OPTION = {
     versionKey: false,
     minimize: false,

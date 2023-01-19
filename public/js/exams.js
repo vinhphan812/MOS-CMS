@@ -27,6 +27,12 @@ function htmlForm(id = "create") {
 }
 
 class ExamsUI extends UIBase {
+    static historyTable = null;
+    static activeTable = null;
+    static dataURL = "/api/admin/exams"
+    static historyDataURL = this.dataURL;
+    static activeDataURL = this.dataURL + "?type=active";
+
     static async create() {
         const is_enabled = {
             date: false, time: false, slot: false, check: function (type) {
@@ -85,6 +91,7 @@ class ExamsUI extends UIBase {
                     $input.setValid(is_enabled.date);
                 });
             };
+
             ExamsModel.IIGRecommend().then(({ data }) => {
                 const $datalist = $("datalist#iig");
 
@@ -119,11 +126,69 @@ class ExamsUI extends UIBase {
         }
     }
 
+    static loadList() {
+        if (this.historyTable)
+            this.historyTable.setData(this.historyDataURL);
+        if (this.activeTable)
+            this.activeTable.setData(this.activeDataURL);
+    }
+
     static addAction() {
     }
 
     static addEvent() {
         $("#create-btn").click(this.create);
+        this.activeTable = new Tabulator("#active_table", {
+            layout: "fitColumns",
+            minHeight: "200px",
+            index: "ID",
+            dataLoaderLoading: "<span>Đang tải dữ liệu...!</span>",
+            columns: [
+                { title: "ID", field: "_id" },
+                {
+                    title: "Ngày Thi",
+                    field: "date",
+                    formatter: (cell, formatterParams) => {
+                        let value = cell.getValue();
+
+                        return moment(value).format("DD/MM/YYYY")
+                    }
+                },
+                { title: "Số Lượng", field: "slot", },
+                { title: "Còn Lại", field: "remaining" }
+            ]
+        });
+
+        this.historyTable = new Tabulator("#history_table", {
+            layout: "fitColumns",
+            minHeight: "200px",
+            index: "ID",
+            dataLoaderLoading: "<span>Đang tải dữ liệu...!</span>",
+            columns: [
+                {
+                    title: "ID", field: "_id", formatter: cell => {
+                        const id = cell.getValue();
+                        return `<a href="/admin/exams/${ id }">${ id }</a>`
+                    }
+                },
+                { title: "Giờ Thi", field: "time.time" },
+                {
+                    title: "Ngày Thi",
+                    field: "date",
+                    formatter: (cell, formatterParams) => {
+                        let value = cell.getValue();
+
+                        return moment(value).format("DD/MM/YYYY")
+                    }
+                },
+                { title: "Số Lượng", field: "slot", },
+                { title: "Còn Lại", field: "remaining" }
+            ]
+        });
+
+        this.historyTable.on("tableBuilt", () => {
+            this.loadList();
+        });
     }
 }
 
@@ -135,6 +200,8 @@ class ExamsService extends Base {
             const res = await ExamsModel.create(date, time, slot);
 
             Alert("Success", res.message, "OK", "success");
+
+            UI.loadList();
         } catch (e) {
             return Alert("Error", e.message, "OK", "error");
         }

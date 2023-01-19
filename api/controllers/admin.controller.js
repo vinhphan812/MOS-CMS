@@ -1,4 +1,4 @@
-const { Times } = require("../../models");
+const { Times, Exam } = require("../../models");
 module.exports = {
     index: (req, res, next) => {
         res.json({ success: true, message: "ADMIN" });
@@ -6,6 +6,23 @@ module.exports = {
 
     timeList: async (req, res, next) => {
         const data = await Times.find({});
+
+        res.json(data);
+    },
+
+    examList: async (req, res, next) => {
+        const { type } = req.query;
+
+        let data = [];
+
+        if (type == "active") {
+            data = await Exam.find({
+                date: {
+                    $gte: new Date()
+                }
+            }).populate("time", { _id: 1, time: 1 });
+        } else
+            data = await Exam.find({}).populate("time", { _id: 1, time: 1 });
 
         res.json(data);
     },

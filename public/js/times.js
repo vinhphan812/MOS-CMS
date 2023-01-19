@@ -3,8 +3,6 @@ Onload = () => {
     UI = TimesUI.init();
 };
 
-const dataURL = "/api/admin/times";
-
 function htmlForm(id = "create") {
     return `<form id="${ id }">
             <div class="mb-3">
@@ -17,6 +15,7 @@ function htmlForm(id = "create") {
 
 class TimesUI extends UIBase {
     static table = null;
+    static dataURL = "/api/admin/times";
 
     static create(e) {
         const addCreateEvent = () => {
@@ -124,7 +123,7 @@ class TimesUI extends UIBase {
     static async loadList() {
         try {
             if (this.table)
-                this.table.setData("http://localhost:3010/api/admin/times");
+                this.table.setData(this.dataURL);
         } catch (e) {
             console.log(e);
         }
@@ -133,12 +132,11 @@ class TimesUI extends UIBase {
     static addEvent() {
         $("#create-btn").click(TimesUI.create);
 
-        this.table = new Tabulator("#example-table", {
+        this.table = new Tabulator("#times-table", {
             data: [],
             layout: "fitColumns",
             minHeight: "200px",
             index: "ID",
-            ajaxURL: "http://localhost:3010/api/admin/times",
             columns: [
                 { title: "ID", field: "_id", visible: false },
                 {

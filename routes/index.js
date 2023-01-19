@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { homePage, registerPage } = require("../controllers/index.controller");
+const { homePage, registrationPage } = require("../controllers/index.controller");
 const authRoute = require("./auth.route");
 const adminRoute = require("./admin/");
 const apiRoute = require("../api");
@@ -12,6 +12,6 @@ router.use("/admin", adminRoute);
 /* GET home page. */
 router.get("/", homePage);
 
-router.get("/register", registerPage);
+router.get("/registration", registrationPage);
 
 module.exports = router;

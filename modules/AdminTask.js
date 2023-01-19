@@ -115,7 +115,7 @@ module.exports.AdminTask = {
 
         if (existed) return { success: false, message: "EXAM EXISTED", data: { ex: ["date", "time"] } }
 
-        const data = await Exam.create({ date: date, time, slot });
+        const data = await Exam.create({ date: date, time, slot, remaining: slot });
 
         return success({ data, message: "Created" });
     }
