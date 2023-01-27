@@ -20,8 +20,9 @@ nav.navbar.navbar-expand-lg.navbar-dark.dark.text-light
                                 img.user-avatar-small(src=user.avatar ? user.avatar : `/public/images/TEACHER.png` alt=user.name)
                                 span= user.name
                             ul.dropdown-menu(aria-labelledby='user-dropdown')
-                                li
-                                    a.dropdown-item(href='/user/profile') Hồ sơ
+                                if user.role == "ADMIN"
+                                    li
+                                        a.dropdown-item(href='/admin/settings') Cài đặt
                                 li
                                     a.dropdown-item(href='/logout') Đăng xuất
                     else

@@ -2,70 +2,85 @@ extends ./layouts/common
 
 block head
     link(rel="stylesheet" href="/public/css/registration.css")
+    link(href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet")
 
 block content
-    form(action="/register" method="POST").bg-white.p-5.shadow-sm
-        h1.h1.text-center Đăng kí thi
+    form(action="/registration" name="registration" method="POST" enctype="multipart/form-data").bg-white.p-5.shadow-sm
+        h1.h1.text-center.mb-3 Đăng ký thi
         if errors && errors.length
             each val in errors
                 .alert.alert-danger.mx-5= val
         .row.justify-content-center
             .col-md-8
-                .row.mb-2
-                    input.form-control(type='text' name="fullname" placeholder="Họ và tên" value=body ? body.fullname : "")
-                .row.mb-2
-                    .col-md-8.p-0.pe-2
-                        input.col-md-6.form-control(type="text" name="idCardNumber" placeholder="CCCD/CMND" value=body ? body.idCardNumber : "")
-                    .col-md-4.p-0
-                        input.col-md-6.form-control(type="date" name="birthday" placeholder="Ngày sinh" value=body ? body.birthday : "")
-                .row.mb-2
-                    .col-md-8.p-0.pe-2
-                        input.form-control(type="text" name="phone" placeholder="Số điện thoại" value=body ? body.phone : "")
-                    .col-md-4.p-0.d-flex.align-items-center
-                        .form-check.form-check-inline
-                            input.form-check-input(type="radio" id="male" name="gender" value="male")
-                            label.form-check-label(for="male") Nam
-                        .form-check.form-check-inline
-                            input.form-check-input(type="radio" id="female" name="gender" value="female")
-                            label.form-check-label(for="female") Nữ
-                .row.mb-2
-                    input.col-md-6.form-control(type="email" name="email" placeholder="Email" value=body ? body.email : "")
+                .row.mb-2.mx-2
+                    .col.p-0
+                        label.form-label.ps-2(for="fullname")
+                            span Họ và tên
+                            span.text-danger *
+                        input.form-control(type='text' name="fullname" id="fullname" placeholder="Họ và tên" value=body ? body.fullname : "")
+                .row.mb-2.mx-2
+                    .col-md-6.p-0.pe-md-2.pb-md-0.pb-2
+                        label.form-label.ps-2(for="idCardNumber")
+                            span CCCD/CMND
+                            span.text-danger *
+                        input.col-md-6.form-control(type="text" name="idCardNumber" id="idCardNumber" placeholder="CCCD/CMND" value=body ? body.idCardNumber : "")
+                    .col-md-6.p-0
+                        label.form-label.ps-2(for="birthday")
+                            span Ngày sinh
+                            span.text-danger *
+                        input.col-md-6.form-control(type="date" name="birthday" id="birthday" placeholder="Ngày sinh" value=body ? body.birthday : "")
+                .row.mb-2.mx-2
+                    .col-md-8.p-0.pe-2.mb-2.mb-md-0
+                        label.form-label.ps-2(for="phone")
+                            span Số điện thoại
+                            span.text-danger *
+                        input.form-control(type="text" name="phone" id="phone" placeholder="Số điện thoại" value=body ? body.phone : "")
+                    .col-md-4.p-0.ps-2
+                        label.form-label.mb-3
+                            span Giới tính
+                            span.text-danger *
+                        .d-flex.align-items-center
+                            .form-check.form-check-inline
+                                input.form-check-input(type="radio" id="male" name="gender" value="male")
+                                label.form-check-label(for="male") Nam
+                            .form-check.form-check-inline
+                                input.form-check-input(type="radio" id="female" name="gender" value="female")
+                                label.form-check-label(for="female") Nữ
+                        #gender-validate.invalid-feedback.d-block
+                .row.mb-2.mx-2
+                    label.form-label.ps-2(for="email")
+                        span Email
+                        span.text-danger *
+                    input.col-md-6.form-control(type="email" name="email" id="email" placeholder="Email" value=body ? body.email : "")
 
-                #accordionSubject.accordion.mb-3
-                    .accordion-item
-                        h2#headingWord.accordion-header
-                            button.accordion-button.collapsed.d-flex.justify-content-between(type='button', data-bs-toggle='collapse', data-bs-target='#collapseWord', aria-expanded='false', aria-controls='collapseWord')
-                                img(src="/public/images/word.svg" alt="word" width="38" class="me-2")
-                                span.fw-bold Word 2016 Specialist
-                                span  878.000đ 
-                        #collapseWord.accordion-collapse.collapse(aria-labelledby='headingWord', data-bs-parent='#accordionSubject')
-                            .accordion-body
-                                | Placeholder content for this accordion, which is intended to demonstrate the 
-                                code .accordion-flush
-                                |  class. This is the first item&apos;s accordion body.
-                    .accordion-item
-                        h2#headingExcel.accordion-header
-                            button.accordion-button.excel.collapsed.d-flex.justify-content-between(type='button', data-bs-toggle='collapse', data-bs-target='#collapseExcel', aria-expanded='false', aria-controls='collapseExcel')
-                                img(src="/public/images/excel.svg" alt="excel" width="38" class="me-2")
-                                span.fw-bold Excel 2016 Specialist
-                                span  878.000đ
-                        #collapseExcel.accordion-collapse.collapse(aria-labelledby='headingExcel', data-bs-parent='#accordionSubject')
-                            .accordion-body
-                                | Placeholder content for this accordion, which is intended to demonstrate the 
-                                code .accordion-flush
-                                |  class. This is the second item&apos;s accordion body. Let&apos;s imagine this being filled with some actual content.
-                    .accordion-item
-                        h2#headingPPT.accordion-header
-                            button.accordion-button.ppt.collapsed.d-flex.justify-content-between(type='button', data-bs-toggle='collapse', data-bs-target='#collapsePPT', aria-expanded='false', aria-controls='collapsePPT')
-                                img(src="/public/images/powerpoint.svg" alt="powerpoint" width="38" class="me-2")
-                                span.fw-bold PowerPoint 2016 Specialist
-                                span  878.000đ
-                        #collapsePPT.accordion-collapse.collapse(aria-labelledby='headingPPT', data-bs-parent='#accordionSubject')
-                            .accordion-body
-                                | Placeholder content for this accordion, which is intended to demonstrate the 
-                                code .accordion-flush
-                                |  class. This is the third item&apos;s accordion body. Nothing more exciting happening here in terms of content, but just filling up the space to make it look, at least at first glance, a bit more representative of how this would look in a real-world application.
-                input.my-2.form-control(type="file" name="bankingImage")
+                label.form-label.ps-2 Môn thi
+                ul.list-group.mb-4
+                    li.list-group-item.word.d-flex.justify-content-between.align-items-center
+                        img(src="/public/images/word.svg" alt="word" width="38" class="me-2")
+                        span.fw-bold Word 2016 Specialist
+                        span  878.000đ
+                    li.list-group-item.excel.d-flex.justify-content-between.align-items-center
+                        img(src="/public/images/excel.svg" alt="excel" width="38" class="me-2")
+                        span.fw-bold Excel 2016 Specialist
+                        span  878.000đ
+
+                    li.list-group-item.ppt.d-flex.justify-content-between.align-items-center
+                        img(src="/public/images/powerpoint.svg" alt="powerpoint" width="38" class="me-2")
+                        span.fw-bold PowerPoint 2016 Specialist
+                        span  878.000đ
+
+                label(for="registration_table") Lịch Thi
+                .mb-3
+                    #registration_table.mb-2
+                    .text-danger * Lịch thi đã đăng ký sẽ không được thay đổi.
+                    .text-danger * Giờ thi phải cách nhau một tiếng rưỡi.
+                .mb-3
+                    label.form-label(for="bankingImage")
+                        span Hình ảnh minh chứng chuyển khoản
+                        span.text-danger *
+                    input.my-2.form-control(type="file" name="bankingImage" id="bankingImage" accept="image/png, image/jpeg, image/jpg")
+                input(type="hidden" name="registrations" id="registrations" value="")
                 input.form-control.mb-2.btn.btn-primary(type="submit" value="Đăng ký")
 block script
     script(src="/public/js/registration.js")
+    script(type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js")

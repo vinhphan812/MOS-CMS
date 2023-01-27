@@ -4,6 +4,41 @@ const swalDefaultConfig = {
     heightAuto: false,
 }
 
+/**
+ * JQuery Input Add setValid, clearValidate handle
+ * @param querySelect query string, is a query selector in JQuery
+ * @returns {*|jQuery|HTMLElement} JQuery with setValid, ClearValidate Function
+ */
+const $IV =
+    (querySelect) => {
+        const $el = $(querySelect);
+        $el.__proto__.clearValidate = function () {
+            const parent = $(this).parent();
+            parent.removeClass("was-validated")
+            $(this)
+                .removeClass("is-invalid")
+                .removeClass("is-valid");
+        }
+
+        $el.__proto__.setValid = function (status) {
+            $el.clearValidate();
+            this.addClass(status ? "is-valid" : "is-invalid");
+        }
+
+        $el.__proto__.feedback = function (message) {
+            const parent = $(this).parent();
+            const feedback = $(".invalid-feedback", parent);
+
+            if (feedback.length) {
+                feedback.text(message);
+            } else {
+                parent.append(`<div class="invalid-feedback">${ message }.</div>`)
+            }
+        }
+
+        return $el;
+    }
+
 function Alert(title, text, confirmButtonText, icon = "error") {
     return Swal.fire({
         heightAuto: false,
@@ -11,7 +46,7 @@ function Alert(title, text, confirmButtonText, icon = "error") {
         text,
         icon,
         confirmButtonText,
-        timer: 1000,
+        timer: 2000,
         timerProgressBar: true,
     });
 }

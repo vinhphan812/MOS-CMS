@@ -1,9 +1,9 @@
 const { Router } = require("express");
 
-const { index } = require("../../controllers/admin");
+const { index, settingsPage } = require("../../controllers/admin");
 
 const {
-	decentralization,
+    decentralization,
 } = require("../../middlewares/decentralization.middleware");
 const examRouter = require("./exam.route");
 const fixedTimeRoute = require("./fixed_time.route")
@@ -14,6 +14,8 @@ const router = Router();
 router.use(decentralization(ROLE.ADMIN));
 
 router.get("/", index);
+
+router.get("/settings", settingsPage);
 
 router.use("/times", fixedTimeRoute);
 

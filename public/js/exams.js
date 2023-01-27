@@ -35,7 +35,10 @@ class ExamsUI extends UIBase {
 
     static async create() {
         const is_enabled = {
-            date: false, time: false, slot: false, check: function (type) {
+            date: false,
+            time: false,
+            slot: false,
+            check: function (type) {
                 Swal.getConfirmButton().disabled = !(this.date && this.time && this.slot);
                 if (this.date && this.time && type != "slot") {
                     ExamsService.validate().then((ex) => {
@@ -54,18 +57,41 @@ class ExamsUI extends UIBase {
         };
         try {
             const addCreateEvent = () => {
-                is_enabled.check();
+                function dateEvent(e) {
+                    const $input = $IV(e.target);
+                    const date = $input.val();
+                    $input.clearValidate();
 
-                $("#time").change((e) => {
+                    is_enabled.date = new Date(date) && /(\d{2}|\d{1})\/(\d{2}|\d{1})\/\d{4}/g.test(date);
+
+
+                    if (!e.active)
+                        timeEvent({ target: $("#time"), active: true });
+
+                    is_enabled.check();
+
+                    $input.setValid(is_enabled.date);
+
+                }
+
+                function timeEvent(e) {
                     const $input = $IV(e.target);
                     const time = $input.val();
 
                     $input.clearValidate();
 
                     is_enabled.time = !!time && time != "Không có";
-                    is_enabled.check();
+
+                    if (!e.active)
+                        dateEvent({ target: $("#date"), active: true });
+
+                    is_enabled.check("time");
                     $input.setValid(is_enabled.time);
-                });
+                }
+
+                is_enabled.check();
+
+                $("#time").change(timeEvent);
 
                 $("#slot").change((e) => {
                     const $input = $IV(e.target);
@@ -79,17 +105,7 @@ class ExamsUI extends UIBase {
                     $input.setValid(is_enabled.slot);
                 });
 
-                $("#date").change((e) => {
-                    const $input = $IV(e.target);
-                    const date = $input.val();
-                    $input.clearValidate();
-
-                    is_enabled.date = new Date(date) && /(\d{2}|\d{1})\/(\d{2}|\d{1})\/\d{4}/g.test(date);
-
-                    is_enabled.check();
-
-                    $input.setValid(is_enabled.date);
-                });
+                $("#date").change(dateEvent);
             };
 
             ExamsModel.IIGRecommend().then(({ data }) => {
@@ -171,7 +187,7 @@ class ExamsUI extends UIBase {
                         return `<a href="/admin/exams/${ id }">${ id }</a>`
                     }
                 },
-                { title: "Giờ Thi", field: "time.time" },
+                { title: "Giờ Thi", field: "time" },
                 {
                     title: "Ngày Thi",
                     field: "date",

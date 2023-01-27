@@ -12,7 +12,7 @@ module.exports = {
         if (userId) {
             const user = await User.get(userId);
 
-            res.locals.menu = MENU_BY_ROLE[user.role];
+            res.locals.menu = user.role == ROLE.ADMIN ? Object.values(MENU_BY_ROLE).flat() : MENU_BY_ROLE[user.role];
             res.locals.user = user;
             res.locals.userId = userId;
         } else {

@@ -1,5 +1,4 @@
 const { Times, Exam } = require("../models");
-const moment = require("moment");
 const IIG = require("./IIG");
 
 function checkValidTime(time) {
@@ -20,11 +19,6 @@ function checkValidDate(date) {
     }
 }
 
-function newDate(dateString) {
-    dateString = dateString.split("/").reverse().join("-") + " 00:00:00";
-    console.log(dateString);
-    return moment(dateString).toDate();
-}
 
 function success(args) {
     return { success: true, ...args }
@@ -90,33 +84,14 @@ module.exports.AdminTask = {
 
     check_exam: async ({ date, time }) => {
         try {
-            console.log(date);
-            date = newDate(date)
-            console.log(date);
-
-            checkValidDate(date);
-
-            const exam = await Exam.findOne({ date: date, time });
-
-            if (exam) return { success: false, message: "EXAM EXISTED", data: { ex: ["date", "time"] } }
-
-            return success({ message: "not existed" })
+            return Exam.checkExam({ date, time });
         } catch ({ message, data }) {
             return fail({ message, data });
         }
     },
     create_exam: async ({ time, date, slot }) => {
-        date = newDate(date);
-        slot = +slot;
+        const data = await Exam.createExam({ time, date, slot });
 
-        if (slot == NaN) return { success: false, message: "QUANTITY INVALID", data: { ex: ["slot"] } };
-
-        const existed = await Exam.findOne({ date: date, time });
-
-        if (existed) return { success: false, message: "EXAM EXISTED", data: { ex: ["date", "time"] } }
-
-        const data = await Exam.create({ date: date, time, slot, remaining: slot });
-
-        return success({ data, message: "Created" });
+        return data;
     }
 };

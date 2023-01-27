@@ -13,16 +13,7 @@ module.exports = {
     examList: async (req, res, next) => {
         const { type } = req.query;
 
-        let data = [];
-
-        if (type == "active") {
-            data = await Exam.find({
-                date: {
-                    $gte: new Date()
-                }
-            }).populate("time", { _id: 1, time: 1 });
-        } else
-            data = await Exam.find({}).populate("time", { _id: 1, time: 1 });
+        let data = await Exam.getList(type);
 
         res.json(data);
     },

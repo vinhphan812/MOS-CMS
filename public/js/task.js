@@ -1,26 +1,5 @@
 let UI;
 
-/**
- * JQuery Input Add setValid, clearValidate handle
- * @param querySelect query string, is a query selector in JQuery
- * @returns {*|jQuery|HTMLElement} JQuery with setValid, ClearValidate Function
- */
-const $IV =
-    (querySelect) => {
-        const $el = $(querySelect);
-        $el.__proto__.setValid = function (status) {
-            this.addClass(status ? "is-valid" : "is-invalid");
-        }
-        $el.__proto__.clearValidate = function () {
-            this
-                .removeClass("is-invalid")
-                .removeClass("is-valid");
-        }
-
-        console.log($el);
-        return $el;
-    }
-
 class Base {
     static create() {
         console.warn("Not Support Create");
