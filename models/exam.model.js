@@ -64,6 +64,21 @@ examSchema.static({
         const data = await this.findOne({ _id }, { created_at: 0, updated_at: 0 });
         if (!data) throw new Error(`Exam ${ _id } not exited`);
         return data;
+    },
+    register: async function (_id, alias) {
+        if (!_id) return false;
+
+        const data = await this.findOne({ _id });
+
+        if (data.remaining <= 0)
+            throw new Error(`Môn ${ alias } mà bạn đăng ký Đã bị đăng ký hết.`)
+
+        await this.updateOne({ _id: data._id }, {
+            $set: {
+                remaining: data.remaining - 1
+            }
+        });
+        return true;
     }
 })
 

@@ -3,38 +3,107 @@ const { SCHEMA_OPTION, ignoreModel } = require("../utils/constaints");
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const registerSchema = new Schema(
-    {
-        username: String,
-        password: String,
-        email: String,
-        phone: String,
-        first_name: String,
-        gender: { type: String, enum: ["male", "female"], default: "male" },
-        address: String,
-        last_name: String,
-        avatar: { type: String, default: "" },
-        role: {
-            type: String,
-            default: "ADMIN",
-            enum: ["ADMIN"],
-        },
-        is_delete: { type: Boolean, default: false },
-    },
-    SCHEMA_OPTION
-);
+const registerSchema = new Schema({
+    fullname: String,
+    idCardNumber: String,
+    birthday: Date,
+    phone: String,
+    gender: String,
+    email: String,
+    reason: { type: String, default: "" },
+    Word: { type: Schema.Types.ObjectId, ref: "EXAM", default: null },
+    Excel: { type: Schema.Types.ObjectId, ref: "EXAM", default: null },
+    PowerPoint: { type: Schema.Types.ObjectId, ref: "EXAM", default: null },
+    bankingImage: String,
+    is_approved: { type: Boolean, default: false },
+    is_delete: { type: Boolean, default: false },
+    request: { type: String, enum: ["REQUEST", "NO_REQUEST"], default: "REQUEST" }
+}, SCHEMA_OPTION);
 
 registerSchema.static({
-    get: async function (_id) {
-        return await this.findOne(
-            { _id },
-            ignoreModel(["password"])
-        );
-    },
-    updateUser: async function (_id, $set) {
-        await this.updateOne({ _id }, { $set });
-        return this.get(_id);
-    },
+    getList: async function (type, page = 1, size = 10) {
+        if (!["history", "need_approved", "approved"].includes(type)) return [];
+
+        const date = new Date();
+
+        const $match = type == "need_approved" ? {
+            request: "REQUEST",
+            $or: [
+                { "Word.date": { $gt: date } },
+                { "PowerPoint.date": { $gt: date } },
+                { "Excel.date": { $gt: date } }
+            ]
+        } : type == "approved" ? {
+            is_approved: true,
+            request: "NO_REQUEST",
+            $or: [
+                { "Word.date": { $gt: date } },
+                { "PowerPoint.date": { $gt: date } },
+                { "Excel.date": { $gt: date } }
+            ]
+        } : {};
+
+        // let data = await this.find(query, null, { skip: size * (page - 1), limit: size }).populate([{
+        //     path: "Word", select: "date", match: { date: { $gt: date } }
+        // }, {
+        //     path: "Excel", select: "date"
+        // }, {
+        //     path: "PowerPoint", select: "date"
+        // }]);
+
+
+        const data = await this.aggregate([
+            {
+                $lookup: {
+                    from: "EXAM",
+                    localField: "Word",
+                    foreignField: "_id",
+                    as: "Word",
+                    pipeline: [{ $project: { date: 1, _id: 1, time: 1 } }]
+                },
+            },
+            {
+                $lookup: {
+                    from: "EXAM",
+                    localField: "Excel",
+                    foreignField: "_id",
+                    as: "Excel",
+                    pipeline: [{ $project: { date: 1, _id: 1, time: 1 } }]
+                }
+            },
+            {
+                $lookup: {
+                    from: "EXAM",
+                    localField: "PowerPoint",
+                    foreignField: "_id",
+                    as: "PowerPoint",
+                    pipeline: [{ $project: { date: 1, _id: 1, time: 1 } }]
+                }
+            },
+            {
+                $set: {
+                    "Word": { $first: "$Word" },
+                }
+            },
+            {
+                $set: {
+                    "Excel": { $first: "$Excel" },
+                }
+            },
+            {
+                $set: {
+                    "PowerPoint": { $first: "$PowerPoint" },
+                }
+            },
+            {
+                $match
+            },
+        ]).exec();
+
+        const last_page = Math.ceil(data.length / size);
+
+        return { data: page > last_page ? [] : data.splice((page - 1) * size, size), last_page };
+    }
 });
 
 registerSchema.method({});

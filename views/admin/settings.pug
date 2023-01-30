@@ -1,4 +1,10 @@
 extends ../layouts/common
 
 block content
-    h1 Settings
+    .bg-white.p-5.shadow-sm
+        h1 Cài đặt
+
+        label.form-label.ps-2(for="email")
+            span Email
+            span.text-danger *
+        input.form-control(type='email' name="email" id="email" placeholder="Email" value="")

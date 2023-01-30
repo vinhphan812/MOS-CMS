@@ -41,10 +41,10 @@ block content
                             span.text-danger *
                         .d-flex.align-items-center
                             .form-check.form-check-inline
-                                input.form-check-input(type="radio" id="male" name="gender" value="male")
+                                input.form-check-input(type="radio" id="male" name="gender" value="male" checked=body ? (body.gender == "male") : false)
                                 label.form-check-label(for="male") Nam
                             .form-check.form-check-inline
-                                input.form-check-input(type="radio" id="female" name="gender" value="female")
+                                input.form-check-input(type="radio" id="female" name="gender" value="female" checked=body ? (body.gender == "female") : false)
                                 label.form-check-label(for="female") Nữ
                         #gender-validate.invalid-feedback.d-block
                 .row.mb-2.mx-2
@@ -79,7 +79,8 @@ block content
                         span Hình ảnh minh chứng chuyển khoản
                         span.text-danger *
                     input.my-2.form-control(type="file" name="bankingImage" id="bankingImage" accept="image/png, image/jpeg, image/jpg")
-                input(type="hidden" name="registrations" id="registrations" value="")
+                    img#image_preview(alt="Hình ảnh chuyển tiền" class="d-none").w-100
+                input(type="hidden" name="registrations" id="registrations" value= body ? body.registrations : "")
                 input.form-control.mb-2.btn.btn-primary(type="submit" value="Đăng ký")
 block script
     script(src="/public/js/registration.js")

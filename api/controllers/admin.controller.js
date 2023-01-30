@@ -1,4 +1,4 @@
-const { Times, Exam } = require("../../models");
+const { Times, Exam, Register } = require("../../models");
 module.exports = {
     index: (req, res, next) => {
         res.json({ success: true, message: "ADMIN" });
@@ -14,6 +14,14 @@ module.exports = {
         const { type } = req.query;
 
         let data = await Exam.getList(type);
+
+        res.json(data);
+    },
+
+    registrationList: async (req, res, next) => {
+        const { type, page, size } = req.query;
+
+        const data = await Register.getList(type, page, size);
 
         res.json(data);
     },

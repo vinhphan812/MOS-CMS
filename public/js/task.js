@@ -52,8 +52,8 @@ class BaseModel extends Base {
         IIG: "iig",
         createExam: "create_exam",
         checkExam: "check_exam",
-        removeTime: "remove_time"
-
+        removeTime: "remove_time",
+        approved: "approved",
     };
 
     static fetchAPI(method, body) {

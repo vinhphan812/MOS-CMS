@@ -1,4 +1,4 @@
-const { Times, Exam } = require("../models");
+const { Times, Exam, Register } = require("../models");
 const IIG = require("./IIG");
 
 function checkValidTime(time) {
@@ -93,5 +93,29 @@ module.exports.AdminTask = {
         const data = await Exam.createExam({ time, date, slot });
 
         return data;
+    },
+    approved: async ({ _id, is_approved, reason }) => {
+        if (!_id || typeof is_approved != "boolean")
+            return fail({ message: "_id, is_approved is not required" });
+
+        const data = await Register.findOne({ _id }).populate(["Word", "Excel", "PowerPoint"]);
+
+        if (!data)
+            return fail({ message: "Not Found Register" });
+
+
+        if (!is_approved) {
+            const subjects = ["Word", "Excel", "PowerPoint"];
+
+            for (const key of subjects) {
+                if (data[key]) {
+                    await Exam.updateOne({ _id: data[key]._id }, { $set: { $inc: { remaining: 1 } } });
+                }
+            }
+        }
+
+        await Register.updateOne({ _id }, { $set: { request: "NO_REQUEST", is_approved, reason } });
+
+        return success({ message: "Thành công" });
     }
 };

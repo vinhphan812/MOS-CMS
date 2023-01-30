@@ -39,7 +39,7 @@ const $IV =
         return $el;
     }
 
-function Alert(title, text, confirmButtonText, icon = "error") {
+function Alert(title, text, confirmButtonText = "OK", icon = "error") {
     return Swal.fire({
         heightAuto: false,
         title,

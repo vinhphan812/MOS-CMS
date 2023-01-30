@@ -12,6 +12,7 @@ const validated = {
     "#email": false,
     "#bankingImage": false,
     "#gender": false,
+    "selected": false,
 }
 
 const checkValidExam = () => {
@@ -41,9 +42,9 @@ Onload = async () => {
         index: "ID",
         progressiveLoad: "scroll",
         paginationSize: 20,
-        placeholder: "No Data Set",
+        placeholder: "Không có dữ liệu nào...!",
         ajaxURL: "/api/exams",
-        // dataLoaderLoading: "<span>Đang tải dữ liệu...!</span>",
+        dataLoaderLoading: "<span>Đang tải dữ liệu...!</span>",
         columns: [
             { title: "ID", field: "_id", visible: false },
             {
@@ -137,11 +138,20 @@ Onload = async () => {
 function fileValidate({ target }) {
     const file = target.files[0];
     const banking = $IV(target);
+    const img = $('#image_preview');
+
+    img.addClass("d-none");
 
     if (file) {
         if (/\w*(\.png|\.jpg|\.jpeg)/g.test(file.name)) {
             $IV(target).setValid(true);
             validated["#bankingImage"] = true;
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function (e) {
+                img.attr('src', this.result);
+                img.removeClass("d-none");
+            }
             return;
         }
     }
@@ -203,6 +213,13 @@ document.forms.registration.onsubmit = (e) => {
         } else {
             validated["#gender"] = true;
         }
+        if (!Object.values(selected).some(Boolean)) {
+            Alert("Oops", "Vui lòng chọn môn thi trước khi đăng ký");
+            validated.selected = false;
+        } else {
+            validated.selected = true;
+            $("#registrations").val(JSON.stringify(selected));
+        }
 
         return Object.values(validated).every(Boolean);
     } catch (e) {
@@ -238,6 +255,4 @@ function updateParams() {
     definition.editorParams.values = Object.keys(selected).filter(e => {
         return !selected[e]
     });
-
-    console.log(definition.editorParams.values, selected)
 }
