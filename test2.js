@@ -4,8 +4,8 @@ const client = new ImapFlow({
 	port: 993,
 	secure: true,
 	auth: {
-		user: "vinhphan812@gmail.com",
-		pass: "uyaixmfdkqwfklfo",
+		user: "Vonguyenthuyanh0304@gmail.com",
+		pass: "xmotfosmzcxpmnqf",
 	},
 });
 

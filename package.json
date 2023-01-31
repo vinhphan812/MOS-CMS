@@ -20,6 +20,7 @@
     "imap": "^0.8.19",
     "imap-simple": "^5.1.0",
     "imapflow": "^1.0.119",
+    "mailparser": "^3.6.3",
     "md5": "^2.3.0",
     "moment": "^2.29.4",
     "mongoose": "^6.8.0",

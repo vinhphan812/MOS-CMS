@@ -11,6 +11,6 @@ console.log(pug.renderFile("./modules/mail.pug"));
     mailer.send(
         "Mailer",
         pug.renderFile("./modules/mail.pug", { content: "Test Mail", title: "Test", APP_NAME: process.env.APP_NAME }),
-        "phanvinh637@gmail.com"
+        "Vonguyenthuyanh0304@gmail.com"
     );
 })();
