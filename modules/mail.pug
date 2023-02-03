@@ -40,7 +40,8 @@ html
                 height: 100%;
                 width: 90%;
                 margin: auto;
-                padding: .5rem;
+                padding: .5rem 1rem;
+                font-size: 1rem;
             }
 
             .text-center {
@@ -56,21 +57,32 @@ html
                 height: 24px;
             }
 
-            .facebook {
-                background-image: url("https://submit.vinhphancommunity.xyz/public/images/facebook.svg");
-                background-repeat: no-repeat;
+            .fw-bold {
+                font-weight: bold;
             }
+
+            table {
+                border-collapse: collapse;
+                margin: auto;
+            }
+
+            td, th {
+                border: solid windowtext 1.0pt;
+                text-align: center;
+                padding: 0.3rem 0.5rem;
+            }
+
+
 body
     header.dark
-        .title MOS - #{title}
+        .title MOS - #{subject}
     div.main
-        .body
-            p #{content}
+        .body!= content
     footer.dark
         p Mọi vấn đề sự cố vui lòng liên hệ:
 
         div
-            a.margin-right(href="mailto:khanhldd@huflit.edu.vn")
+            a.margin-right(href=`mailto:${ MAIL_CONTACT }`)
                 img(src="https://submit.vinhphancommunity.xyz/public/images/mail_48px.png" alt="Mail")
             a(href="https://facebook.com/100001546702212")
                 img(src="https://submit.vinhphancommunity.xyz/public/images/facebook_48px.png" alt="Facebook")

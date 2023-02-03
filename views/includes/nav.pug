@@ -1,9 +1,9 @@
 nav.navbar.navbar-expand-lg.navbar-dark.dark.text-light
     .container
         a.navbar-brand(href='/').d-flex.justify-content-center.align-items-center
-            img(src="" alt="logo").me-2.rounded.mx-auto.d-block
-            span.fw-italic.fs-3 #{APP_NAME.split(" ")[0]}
-            span.fw-bold.fs-3 #{APP_NAME.split(" ")[1]}
+            img(src="/public/logo.png" alt="logo" width=52).me-2.rounded.mx-auto.d-block
+            span.fw-bold.fs-3 #{APP_NAME.split(" ")[0]}&nbsp;
+            span.fw-italic.fs-4 #{APP_NAME.split(" ").slice(1).join(" ")}
         button.navbar-toggler(type='button' data-bs-toggle='collapse' data-bs-target='#navbarSupportedContent' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation')
             span.navbar-toggler-icon
         #navbarSupportedContent.collapse.navbar-collapse

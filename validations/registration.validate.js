@@ -12,9 +12,27 @@ function birthdayValidate(value) {
 module.exports = {
     registrationValidate: async (req, res, next) => {
         try {
-            const { fullname, idCardNumber, birthday, phone, gender, email, registrations } = req.body;
-            const bankingImage = "/" + req.file.path.split("\\").join("/");
+            const {
+                fullname,
+                idCardNumber,
+                birthday,
+                phone,
+                gender,
+                email,
+                registrations,
+                address,
+                streetNumber,
+                city,
+                district,
+                ward
+            } = req.body;
+
             const errors = [];
+
+            if (!address || address.length < 6) {
+                errors.push("Địa chỉ không hợp lệ");
+            }
+
             if (!fullname || fullname.length < 6) {
                 errors.push("Họ và tên phải có ít nhất 6 ký tự.");
             }
@@ -41,9 +59,17 @@ module.exports = {
                 errors.push("Email bạn nhập chư a đúng.");
             }
 
-            const parse = JSON.parse(registrations);
+            if (!req.file) {
+                errors.push("Bạn phải tải file minh chứng.");
+            }
 
-            if (typeof parse != "object") errors.push("Xảy ra lỗi");
+            const bankingImage = req.file ? "/" + req.file.path.split("\\").join("/") : "";
+
+            if (!registrations) errors.push("Bạn chưa chọn môn thi.");
+
+            const parse = registrations ? JSON.parse(registrations) : {};
+
+            if (typeof parse != "object") errors.push("Xảy ra lỗi.");
 
             // if (!parse.Word || !parse.Excel || !parse.PowerPoint) errors.push("Xảy ra lỗi thành phần bắt buộc");
             const registrationObj = {
@@ -64,7 +90,12 @@ module.exports = {
                 gender,
                 email,
                 registrations: registrationObj,
-                bankingImage
+                bankingImage,
+                address,
+                streetNumber,
+                city,
+                district,
+                ward
             };
 
             if (errors.length) {
@@ -75,6 +106,7 @@ module.exports = {
             next();
         } catch (e) {
             console.log(e);
+            res.locals.errors = [e.message];
             return res.render("registration");
         }
     }

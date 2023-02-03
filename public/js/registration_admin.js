@@ -16,6 +16,9 @@ Onload = async () => {
             {
                 title: "Giới tính",
                 field: "gender",
+                formatter: cell => {
+                    return cell.getValue() == "male" ? "Nam" : "Nữ";
+                }
             },
             {
                 title: "Họ và tên",
@@ -29,7 +32,7 @@ Onload = async () => {
                 }
             },
             { title: "Số CCCD/CMND", field: "idCardNumber" },
-            { title: "Địa chỉ email", field: "email" },
+            { title: "Email", field: "email" },
             { title: "Số điện thoại", field: "phone" },
             {
                 title: "Word", field: "Word", formatter: (cell) => {
@@ -67,48 +70,6 @@ Onload = async () => {
                     return moment(value.date).hour(h).minute(m).format("HH:mm DD/MM/YYYY");
                 }
             },
-            // {
-            //     title: "Chọn",
-            //     editor: "list",
-            //     editorParams: {
-            //         values: ["Word", "Excel", "PowerPoint"],
-            //         placeholderEmpty: "Bạn đã chọn tất cả",
-            //         itemFormatter: (label, value, item, element) => {
-            //             const selects = Object.keys(selected);
-            //
-            //             for (const selector of selects) {
-            //                 if (selected[selector] == value.toLowerCase()) {
-            //                     $(element).remove();
-            //                 }
-            //             }
-            //
-            //             return `<img src="/public/images/${ label.toLowerCase() }.svg" class="pe-2"/><strong>${ label }</strong>`;
-            //         },
-            //     },
-            //     cellEdited: function (cell) {
-            //         const data = cell.getData();
-            //         const value = cell.getValue();
-            //         const oldValue = cell.getOldValue();
-            //         if (oldValue)
-            //             selected[oldValue] = "";
-            //
-            //         if (value) {
-            //             selected[value] = data._id;
-            //             checkValid();
-            //         }
-            //
-            //         updateParams();
-            //     },
-            //     formatter: (cell, formatterParams) => {
-            //         let value = cell.getValue();
-            //         if (!value)
-            //             return "";
-            //         return `<div class="d-flex justify-content-center">
-            //                     <img src="/public/images/${ value.toLowerCase() }.svg" width="24" class="me-2"/>
-            //                     <span>${ value } </span>
-            //                 </div>`
-            //     }
-            // }
         ],
     });
     needApprovedTable = new Tabulator("#need_approved_table", {
@@ -127,6 +88,9 @@ Onload = async () => {
             {
                 title: "Giới tính",
                 field: "gender",
+                formatter: cell => {
+                    return cell.getValue() == "male" ? "Nam" : "Nữ";
+                }
             },
             {
                 title: "Họ và tên",
@@ -213,7 +177,7 @@ Onload = async () => {
                     cancelButtonText: "Hủy",
                     showLoaderOnConfirm: true,
                     preConfirm: async (result) => {
-                        await changeIsApproved(result, data._id);
+                        await changeIsApproved(false, data._id, result);
                     }
                 })
             },
@@ -225,6 +189,7 @@ Onload = async () => {
 
     activeTable = new Tabulator("#active_table", {
         layout: "fitColumns",
+        responsiveLayout: "hide",
         minHeight: "100px",
         index: "ID",
         progressiveLoad: "scroll",
@@ -238,6 +203,9 @@ Onload = async () => {
             {
                 title: "Giới tính",
                 field: "gender",
+                formatter: cell => {
+                    return cell.getValue() == "male" ? "Nam" : "Nữ";
+                }
             },
             {
                 title: "Họ và tên",
@@ -333,6 +301,23 @@ Onload = async () => {
             // }
         ],
     })
+
+    $("#reload").click(reload)
+}
+
+function reload() {
+    if (needApprovedTable) {
+        needApprovedTable.dataLoader.load();
+    }
+
+    if (activeTable) {
+        activeTable.dataLoader.load();
+    }
+
+    if (historyTable) {
+        historyTable.dataLoader.load();
+    }
+    this.blur();
 }
 
 async function changeIsApproved(is_approved, _id, reason) {

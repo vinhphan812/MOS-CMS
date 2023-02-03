@@ -52,6 +52,36 @@ block content
                         span Email
                         span.text-danger *
                     input.col-md-6.form-control(type="email" name="email" id="email" placeholder="Email" value=body ? body.email : "")
+                label.mx-3.mb-2
+                    span Địa chỉ
+                    span.text-danger *
+                .form-floating.mb-2.mx-2
+                    input.form-control(type="text" id="streetNumber" name="streetNumber" placeholder="Số nhà" value=body ? body.streetNumber : "")
+                    label(for="streetNumber")
+                        span Số nhà, tên đường
+                        span.text-danger *
+                .row.mb-2.align-items-start.mx-2
+                    .col-md-4.px-0.py-md-0.py-2
+                        .form-floating
+                            select.form-select(id="city" name="city")
+                                option(selected value="none") Tỉnh / Thành Phố
+                            label(for="city")
+                                span Tỉnh/Thành phố
+                                span.text-danger *
+                    .col-md-4.px-0.px-md-2.py-md-0.py-2
+                        .form-floating
+                            select.form-select(id="district" name="district")
+                                option(selected value="none") Quận / Huyện
+                            label(for="district")
+                                span Quận/Huyện
+                                span.text-danger *
+                    .col-md-4.px-0
+                        .form-floating
+                            select.form-select(id="ward" name="ward")
+                                option(selected value="none") Phường / Xã
+                            label(for="ward")
+                                span Phường/Xã
+                                span.text-danger *
 
                 label.form-label.ps-2 Môn thi
                 ul.list-group.mb-4
@@ -81,6 +111,7 @@ block content
                     input.my-2.form-control(type="file" name="bankingImage" id="bankingImage" accept="image/png, image/jpeg, image/jpg")
                     img#image_preview(alt="Hình ảnh chuyển tiền" class="d-none").w-100
                 input(type="hidden" name="registrations" id="registrations" value= body ? body.registrations : "")
+                input(type="hidden" name="address" id="address" value= body ? body.address : "")
                 input.form-control.mb-2.btn.btn-primary(type="submit" value="Đăng ký")
 block script
     script(src="/public/js/registration.js")

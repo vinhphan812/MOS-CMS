@@ -1,4 +1,4 @@
-const { APP_NAME, GOOGLE_SEO_VERIFICATION } = process.env;
+const { APP_NAME, GOOGLE_SEO_VERIFICATION, MAIL_CONTACT } = process.env;
 const User = require("../models/user.model");
 const { MENU_BY_ROLE } = require("../utils/role.enum.js");
 const moment = require("moment");
@@ -23,6 +23,7 @@ module.exports = {
         res.locals.listNotDisplaySignNav = ["/login", "/register"];
         res.locals.errors = [];
 
+        res.locals.MAIL_CONTACT = MAIL_CONTACT;
         res.locals.isHosting = req.hostname != "localhost";
         res.locals.isOrder = req.originalUrl == "/order";
         res.locals.moment = moment;

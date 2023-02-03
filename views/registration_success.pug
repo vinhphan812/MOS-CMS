@@ -1,4 +1,26 @@
 extends ./layouts/common
 
 block content
-    h1 Success
+    .p-5.shadow-sm.bg-white
+        .h2.mb-4= data.request == "REQUEST" ? "Yêu cầu của bạn đang chờ duyệt" : data.is_approved ? "Yêu cầu của bạn đã được duyệt" : "Yêu cầu của bạn bị từ chối"
+        .h3.mb-3 Thông tin đăng ký
+        .row
+            .col-md-6
+                .mb-3
+                    span.fw-bold Họ và tên:&nbsp;
+                    span= data.fullname
+                .mb-3
+                    span.fw-bold CCCD/CMND:&nbsp;
+                    span= data.idCardNumber
+                .mb-3
+                    span.fw-bold phone:&nbsp;
+                    span= data.phone
+                .mb-3
+                    span.fw-bold Giới tính:&nbsp;
+                    span= data.gender == "male" ? "Nam" : "Nữ"
+                .mb-3
+                    span.fw-bold Email:&nbsp;
+                    span= data.email
+            .col-md-6
+                .mb-3.fw-bold Hình ảnh minh chứng
+                img.w-100(src=`${data.bankingImage}` alt="Hình ảnh minh chứng")

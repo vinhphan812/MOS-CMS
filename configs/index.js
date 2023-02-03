@@ -6,6 +6,11 @@ module.exports = {
 	initDatabase: () => {
 		// connect database from .env
 		mongoose.set("strictQuery", true);
+
+		mongoose.connection.on('connected', function() {
+			console.log("connection established successfully");
+		});
+
 		if (db_url)
 			mongoose.connect(
 				db_url,
@@ -18,5 +23,6 @@ module.exports = {
 					console.log(err);
 				}
 			);
+
 	},
 };

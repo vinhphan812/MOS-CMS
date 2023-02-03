@@ -1,43 +1,63 @@
-const { ImapFlow } = require("imapflow");
-const client = new ImapFlow({
+var Imap = require('imap'),
+	inspect = require('util').inspect;
+
+const { simpleParser } = require('mailparser');
+const fs = require("fs");
+
+const RECEIVE_FROM = "support@timo.vn";
+
+var imap = new Imap({
+	user: "Vonguyenthuyanh0304@gmail.com",
+	password: "xmotfosmzcxpmnqf",
 	host: "imap.gmail.com",
 	port: 993,
-	secure: true,
-	auth: {
-		user: "Vonguyenthuyanh0304@gmail.com",
-		pass: "xmotfosmzcxpmnqf",
-	},
+	tls: true,
+	tlsOptions: { rejectUnauthorized: false },
 });
 
-const main = async () => {
-	// Wait until client connects and authorizes
-	await client.connect();
+function openInbox(cb) {
+	imap.openBox('INBOX', true, cb);
+}
 
-	// Select and lock a mailbox. Throws if mailbox does not exist
-	let lock = await client.getMailboxLock("INBOX");
-	try {
-		// fetch latest message source
-		// client.mailbox includes information about currently selected mailbox
-		// "exists" value is also the largest sequence number available in the mailbox
-
-		let message = await client.fetchOne(client.mailbox.exists, {
-			source: true,
+imap.once('ready', function() {
+	openInbox(function(err, box) {
+		if (err) throw err;
+		var f = imap.seq.fetch(box.messages.total + ':*', {
+			bodies: 'HEADER.FIELDS (FROM TO SUBJECT DATE BODY)',
+			struct: true
 		});
-		// console.log(message.source);
+		f.on('message', function(msg, seqno) {
+			console.log('Message #%d', seqno);
+			var prefix = '(#' + seqno + ') ';
+			msg.on('body', function(stream) {
+				simpleParser(stream, async (err, parsed) => {
+					console.log(parsed);
+				});
+			});
 
-		// list subjects for all messages
-		// uid value is always included in FETCH response, envelope strings are in unicode.
-		for await (let message of client.fetch("1:1", { envelope: true })) {
-			console.log(message);
-			// console.log(`${message.uid}: ${message.envelope.subject}`);
-		}
-	} finally {
-		// Make sure lock is released, otherwise next `getMailboxLock()` never returns
-		lock.release();
-	}
+			msg.once('attributes', function(attrs) {
+				console.log(prefix + 'Attributes: %s', inspect(attrs, false, 8));
+			});
+			msg.once('end', function() {
+				console.log(prefix + 'Finished');
+			});
+		});
+		f.once('error', function(err) {
+			console.log('Fetch error: ' + err);
+		});
+		f.once('end', function() {
+			console.log('Done fetching all messages!');
+			imap.end();
+		});
+	});
+});
 
-	// log out and close connection
-	await client.logout();
-};
+imap.once('error', function(err) {
+	console.log(err);
+});
 
-main().catch((err) => console.error(err));
+imap.once('end', function() {
+	console.log('Connection ended');
+});
+
+imap.connect();

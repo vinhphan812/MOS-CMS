@@ -7,16 +7,21 @@ footer.dark
                     li
                         a(href='/about') Giới thiệu về #{APP_NAME}
             .col-md-4
-                h5 Hổ Trợ
+                h5 Liên hệ
                 ul
                     li
-                        a(href='/FAQ') Câu hỏi thường gặp
+                        a(href=`mailto:${ MAIL_CONTACT }`)
+                            img(src="/public/images/mail_48px.png" alt="Mail")
+                            span #{MAIL_CONTACT}
                     li
-                        a(href='/help') hổ trợ báo cáo
-                    li
-                        a(href='/contact') Liên hệ
+                        a(href="https://facebook.com/100001546702212" target="_blank")
+                            img(src="/public/images/facebook_48px.png" alt="Facebook")
+                            span Lý Khánh
             .col-md-4
                 h5 Thời gian làm việc
+                ul
+                    li.fs-5.mb-2 Sáng: 08:00 - 12:00
+                    li.fs-5 Chiều: 13:30 - 17:30
 
     .footer-copyright.py-2.text-white.text-center
         p.m-0 &copy; #{APP_NAME} - #{new Date().getFullYear()}

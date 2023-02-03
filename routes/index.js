@@ -3,7 +3,9 @@ const {
     homePage,
     registrationPage,
     registrationHandle,
-    registrationPageSuccess
+    registrationPageSuccess,
+    downloadPage,
+    lessonsPage
 } = require("../controllers/index.controller");
 const authRoute = require("./auth.route");
 const adminRoute = require("./admin/");
@@ -19,10 +21,14 @@ router.use("/admin", adminRoute);
 /* GET home page. */
 router.get("/", homePage);
 
+router.get("/download", downloadPage)
+
 router.get("/registration", registrationPage);
 
 router.post("/registration", upload("banking").single("bankingImage"), registrationValidate, registrationHandle);
 
 router.get("/registration/:id", registrationPageSuccess);
+
+router.get("/lessons", lessonsPage);
 
 module.exports = router;

@@ -1,0 +1,22 @@
+extends ./layouts/common
+
+block content
+    .bg-white.p-5.shadow-sm
+        h2.h2.mb-5 Hướng dẫn lấy phần mềm
+
+        .h5
+            span Chuyển khoản đến tài khoản với nội dung: "
+            code &lt;FILE_MOS&gt;
+            code  &lt;mail&gt;
+            span " (tên file mos và địa chỉ mail).
+        .h5.mb-4 Sau đó file sẽ được gửi đến địa chỉ email của bạn.
+        .h6
+            span.text-danger *Số tiền chuyển khoản theo khả năng của mỗi học viên.
+        .h6
+            span.text-danger *
+            span
+                span Nếu bạn đã chuyển khoản mà chưa nhận được file học tập vui lòng liên hệ:&nbsp;
+                a(href="mailto:khanhldd@huflit.edu.vn") Thầy Khánh
+                span &nbsp;qua Email:&nbsp;
+                code #{MAIL_CONTACT}
+                span  để được hổ trợ sớm nhất.

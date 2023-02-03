@@ -1,6 +1,8 @@
 const { Times, Exam, Register } = require("../models");
 const IIG = require("./IIG");
 
+const { approveRegister, denyRegister } = require("../services/mail.service");
+
 function checkValidTime(time) {
     if (!time) {
         throw new Error("time is not required");
@@ -112,6 +114,19 @@ module.exports.AdminTask = {
                     await Exam.updateOne({ _id: data[key]._id }, { $set: { $inc: { remaining: 1 } } });
                 }
             }
+        }
+
+        if (is_approved) {
+            approveRegister(data.email, {
+                name: data.fullname,
+                exams: [
+                    { ...data.Word, alias: "Word" },
+                    { ...data.Excel, alias: "Excel" },
+                    { ...data.PowerPoint, alias: "PowerPoint" }
+                ],
+            });
+        } else {
+            denyRegister(data.email, { name: data.fullname, reason });
         }
 
         await Register.updateOne({ _id }, { $set: { request: "NO_REQUEST", is_approved, reason } });

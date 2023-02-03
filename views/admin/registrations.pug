@@ -3,9 +3,15 @@ extends ../layouts/common
 block content
     .p-5.shadow-sm.bg-white
         .active.mb-5
+            h1.h1.mb-4 Đăng ký
             .d-flex.justify-content-between.align-items-center.mb-2
-                h2.h2 Đăng ký
-            h2.h2 Đã được duyệt
+                h2.h2 Đã được duyệt
+                div
+                    a.me-2.btn.btn-dark(href="/admin/registrations/downloadExcel" target="_blank")
+                        i.bi.bi-download.me-2
+                        span Tải tệp Excel
+                    button.btn.btn-secondary#reload
+                        i.bi.bi-arrow-repeat
             #active_table.mb-4
 
             h2.h2 Cần duyệt

@@ -22,6 +22,6 @@ router.use("/times", fixedTimeRoute);
 
 router.use("/exams", examRouter);
 
-router.use("/registrations", registrationRoute)
+router.use("/registrations", registrationRoute);
 
 module.exports = router;

@@ -1,4 +1,4 @@
-let table;
+let table, Cities;
 
 const selected = { Word: "", Excel: "", PowerPoint: "" };
 
@@ -12,30 +12,90 @@ const validated = {
     "#email": false,
     "#bankingImage": false,
     "#gender": false,
-    "selected": false,
-}
+    "#city": false,
+    "#district": false,
+    "#ward": false,
+    "#streetNumber": false,
+    selected: false,
+};
 
 const checkValidExam = () => {
     return new Promise(async (resolve, reject) => {
         try {
-            const data = await (await fetch("/api/check", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify(selected)
-            })).json();
+            const data = await (
+                await fetch("/api/check", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(selected),
+                })
+            ).json();
 
-            if (!data.success)
-                reject(data);
+            if (!data.success) reject(data);
 
             resolve(data);
         } catch (e) {
             reject(e);
         }
-    })
+    });
+};
+
+const getDataCountry = () => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const data = await (await fetch("https://raw.githubusercontent.com/dvhcvn/data/master/data.json")).json();
+            const city = {};
+
+            for (const { level1_id, level2s, ...item } of data) {
+                const districts = {}
+
+                for (const { level3s, level2_id, ...item } of level2s) {
+                    const wards = {};
+
+                    for (const { level3_id, ...item } of level3s) {
+                        wards[level3_id] = {
+                            ...item,
+                            id: level3_id
+                        }
+                    }
+
+                    districts[level2_id] = { ...item, wards, id: level2_id };
+                }
+
+                city[level1_id] = {
+                    ...item,
+                    id: level1_id,
+                    districts
+                };
+            }
+
+            resolve(city);
+        } catch (e) {
+            reject(e)
+        }
+    });
+}
+
+function data2Option(obj, defaultOption = "Không có") {
+    const data = Object.values(obj).sort((a, b) => {
+        const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+        const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+        if (nameA < nameB) {
+            return -1;
+        }
+        if (nameA > nameB) {
+            return 1;
+        }
+
+        // names must be equal
+        return 0;
+    }).map(e => `<option value="${ e.id }">${ e.name }</option>`);
+
+    data.push(`<option selected value="none">${ defaultOption }</option>`)
+
+    return data;
 }
 
 Onload = async () => {
-
     table = new Tabulator("#registration_table", {
         layout: "fitColumns",
         minHeight: "100px",
@@ -53,8 +113,8 @@ Onload = async () => {
                 formatter: (cell, formatterParams) => {
                     let value = cell.getValue();
 
-                    return moment(value).format("DD/MM/YYYY")
-                }
+                    return moment(value).format("DD/MM/YYYY");
+                },
             },
             { title: "Giờ Thi", field: "time" },
             { title: "Còn Lại", field: "remaining" },
@@ -68,7 +128,10 @@ Onload = async () => {
                         const selects = Object.keys(selected);
 
                         for (const selector of selects) {
-                            if (selected[selector] == value.toLowerCase()) {
+                            if (
+                                selected[selector] ==
+                                value.toLowerCase()
+                            ) {
                                 $(element).remove();
                             }
                         }
@@ -80,8 +143,7 @@ Onload = async () => {
                     const data = cell.getData();
                     const value = cell.getValue();
                     const oldValue = cell.getOldValue();
-                    if (oldValue)
-                        selected[oldValue] = "";
+                    if (oldValue) selected[oldValue] = "";
 
                     if (value) {
                         selected[value] = data._id;
@@ -92,39 +154,136 @@ Onload = async () => {
                 },
                 formatter: (cell, formatterParams) => {
                     let value = cell.getValue();
-                    if (!value)
-                        return "";
+                    if (!value) return "";
                     return `<div class="d-flex justify-content-center">
                                 <img src="/public/images/${ value.toLowerCase() }.svg" width="24" class="me-2"/>
                                 <span>${ value } </span>
-                            </div>`
-                }
-            }
+                            </div>`;
+                },
+            },
         ],
     });
+
+    const address = $("#address").val().length ? $("#address").val().split(", ") : [];
 
     // table.on("tableBuilt", () => {
     //     // table.setData("/api/exams");
     // });
 
+    getDataCountry().then((data) => {
+        Cities = data;
+
+        let cityData = data2Option(Cities, "Tỉnh / Thành Phố");
+
+        const $city = $("#city");
+        const $district = $("#district");
+        const $ward = $("#ward");
+
+        $city.html(cityData);
+
+        function loadDistricts(value) {
+            const districtOption = data2Option(Cities[value].districts, "Quận / Huyện");
+            const wardOption = data2Option({}, "Phường / Xã");
+
+            $district.html(districtOption);
+            $ward.html(wardOption);
+        }
+
+        function loadWards(cityId, value) {
+            const wardOption = data2Option(Cities[cityId].districts[value].wards, "Phường / Xã");
+            $ward.html(wardOption);
+        }
+
+        $city.change(e => {
+            const { value } = e.target;
+            loadDistricts(value);
+        });
+
+        $district.change(e => {
+            const cityId = $city.val();
+            const { value } = e.target;
+            loadWards(cityId, value);
+        });
+
+        inputValidate(
+            "#city",
+            (value) => !value || value == "none",
+            "Tỉnh / Thành Phố Chưa Đúng"
+        );
+
+        inputValidate(
+            "#district",
+            (value) => !value || value == "none",
+            "Quận / Huyện Chưa Đúng"
+        );
+
+        inputValidate(
+            "#ward",
+            (value) => !value || value == "none",
+            "Phường / Xã Chưa Đúng"
+        );
+
+        if (address.length == 4) {
+            $("#streetNumber").val(address[0]);
+            const city = Object.values(Cities).find(e => e.name == address[3])
+            const district = Object.values(Cities[city.id].districts).find(e => e.name == address[2]);
+            const ward = Object.values(Cities[city.id].districts[district.id].wards).find(e => e.name == address[1]);
+
+            $(`select#city`).val(city.id);
+            loadDistricts(city.id);
+            $(`select#district`).val(district.id);
+            loadWards(city.id, district.id)
+            $(`select#ward`).val(ward.id);
+        }
+
+    }).catch(console.error);
+
     const banking = $IV("#bankingImage");
     const gender = $IV("input[name='gender']");
 
-    inputValidate("#fullname", (value) => !value || value.length < 6, "Họ và tên phải có ít nhất 6 ký tự");
-    inputValidate("#idCardNumber", (value) => !value || value.length != 12, "Số CCCD/CMND phải đủ 12 số");
-    inputValidate("#birthday", (value) => {
-        if (!value) return true;
+    inputValidate(
+        "#streetNumber",
+        (value) => !value || value.length < 6,
+        "Số nhà, tên đường phải có ít nhất 6 ký tự"
+    );
 
-        const date = new Date(value);
+    inputValidate(
+        "#fullname",
+        (value) => !value || value.length < 6,
+        "Họ và tên phải có ít nhất 6 ký tự"
+    );
+    inputValidate(
+        "#idCardNumber",
+        (value) => !value || value.length != 12,
+        "Số CCCD/CMND phải đủ 12 số"
+    );
+    inputValidate(
+        "#birthday",
+        (value) => {
+            if (!value) return true;
 
-        if (!date) return true;
+            const date = new Date(value);
 
-        return new Date().getFullYear() - date.getFullYear() < 18 || date.getFullYear() <= 1950
+            if (!date) return true;
 
-    }, "Ngày sinh không đúng");
+            return (
+                new Date().getFullYear() - date.getFullYear() < 18 ||
+                date.getFullYear() <= 1950
+            );
+        },
+        "Ngày sinh không đúng"
+    );
 
-    inputValidate("#phone", (value) => !value || !/^0[0-9]{9}$/g.test(value), "Số điện thoại không đúng");
-    inputValidate("#email", (value) => !value || !/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(value), "Email bạn nhập chư a đúng");
+    inputValidate(
+        "#phone",
+        (value) => !value || !/^0[0-9]{9}$/g.test(value),
+        "Số điện thoại không đúng"
+    );
+    inputValidate(
+        "#email",
+        (value) => !value || !/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(value),
+        "Email bạn nhập chưa đúng"
+    );
 
     gender.change((e) => {
         gender.clearValidate();
@@ -132,13 +291,12 @@ Onload = async () => {
     });
 
     banking.change(fileValidate);
-
-}
+};
 
 function fileValidate({ target }) {
     const file = target.files[0];
     const banking = $IV(target);
-    const img = $('#image_preview');
+    const img = $("#image_preview");
 
     img.addClass("d-none");
 
@@ -149,16 +307,16 @@ function fileValidate({ target }) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function (e) {
-                img.attr('src', this.result);
+                img.attr("src", this.result);
                 img.removeClass("d-none");
-            }
+            };
             return;
         }
     }
 
     banking.setValid(false);
     validated["#bankingImage"] = false;
-    banking.feedback("Tập tin không đúng")
+    banking.feedback("Tập tin không đúng");
 }
 
 function inputValidate(querySelector, invalidCheck, invalidFeedback) {
@@ -177,7 +335,7 @@ function inputValidate(querySelector, invalidCheck, invalidFeedback) {
             $target.setValid(true);
             validated[querySelector] = true;
         }
-    }
+    };
 
     $el.__proto__.validate = validate;
 
@@ -201,7 +359,6 @@ document.forms.registration.onsubmit = (e) => {
             el.blur();
         }
 
-
         fileValidate({ target: banking[0] });
 
         if (!gender.length) {
@@ -221,11 +378,36 @@ document.forms.registration.onsubmit = (e) => {
             $("#registrations").val(JSON.stringify(selected));
         }
 
-        return Object.values(validated).every(Boolean);
+        const isSubmit = Object.values(validated).every(Boolean);
+
+        if (isSubmit) {
+            address();
+
+        }
+
+        return isSubmit;
     } catch (e) {
+
         console.log(e);
         return false;
     }
+};
+
+function address() {
+    const $address = $("#address");
+    const address = [];
+
+    const cityCode = $("#city").val();
+    const districtCode = $("#district").val();
+    const wardCode = $("#ward").val();
+    const streetNumber = $("#streetNumber").val();
+
+    address.push(Cities[cityCode].name);
+    address.push(Cities[cityCode].districts[districtCode].name);
+    address.push(Cities[cityCode].districts[districtCode].wards[wardCode].name);
+    address.push(streetNumber);
+
+    $address.val(address.reverse().join(", "))
 }
 
 async function checkValid() {
@@ -236,14 +418,20 @@ async function checkValid() {
             const res = [];
             for (const item of e.data) {
                 for (const selector of Object.keys(selected)) {
-
                     if (selected[selector] == item) {
                         res.push(selector);
                     }
                 }
             }
         }
-        return Alert(e.message == "CONFLICT_TIME" ? "Lỗi thời gian thi" : e.message, e.message == "CONFLICT_TIME" ? "Thời gian thi phải cách nhau 1 tiếng 30 phút" : e.message, "OK", "error");
+        return Alert(
+            e.message == "CONFLICT_TIME" ? "Lỗi thời gian thi" : e.message,
+            e.message == "CONFLICT_TIME"
+                ? "Thời gian thi phải cách nhau 1 tiếng 30 phút"
+                : e.message,
+            "OK",
+            "error"
+        );
     }
 }
 
@@ -252,7 +440,7 @@ function updateParams() {
     const selectCell = table.columnManager.columns[4];
     const definition = selectCell.getDefinition();
 
-    definition.editorParams.values = Object.keys(selected).filter(e => {
-        return !selected[e]
+    definition.editorParams.values = Object.keys(selected).filter((e) => {
+        return !selected[e];
     });
 }

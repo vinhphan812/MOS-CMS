@@ -1,0 +1,2 @@
+Onload = async () => {
+}
