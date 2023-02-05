@@ -55,7 +55,7 @@ function addRow(ws, data, examField, cRow, type = "IIG") {
         }
     } else if (type == "VTP") {
         ws.getCell(cRow, 1).value = cRow - START_VTP_INDEX + 1;
-        ws.getCell(cRow, 2).value = data._id;
+        ws.getCell(cRow, 2).value = data._id.toString();
         ws.getCell(cRow, 3).value = data.fullname;
         ws.getCell(cRow, 4).value = data.phone;
         ws.getCell(cRow, 5).value = data.address;
@@ -71,7 +71,36 @@ function addRow(ws, data, examField, cRow, type = "IIG") {
 }
 
 module.exports = {
-    exportExcel: async (data) => {
+    exportExcel: async (data, type = "IIG") => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const wb = new Excel.Workbook();
+
+                await wb.xlsx.readFile(type == "IIG" ? IN_DS_PATH : IN_VTP_PATH);
+
+                const ws = wb.getWorksheet(type == "IIG" ? SHEET_DS_NAME : SHEET_VTP_NAME);
+                let tempRow = type == "IIG" ? START_DS_INDEX : START_VTP_INDEX;
+
+                if (!ws) throw new Error("Not Found WorkSheet");
+
+                for (const item of data) {
+                    tempRow = addData(ws, item, tempRow, type);
+                }
+
+                const outPath = `./exports/Report_${ type == "IIG" ? "" : "VTP_" }${ moment().format(
+                    "HHgMMp_DD-MM-YYYY"
+                ) }.xlsx`;
+
+                await wb.xlsx.writeFile(outPath);
+
+                resolve(outPath);
+            } catch (e) {
+                reject(e);
+            }
+        });
+    },
+
+    exportIIG: async (data) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const wb = new Excel.Workbook();

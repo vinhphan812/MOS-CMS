@@ -1,16 +1,23 @@
 let historyTable, activeTable, needApprovedTable;
 
+const exportExcelURL = "/admin/registrations/excel"
+
 Onload = async () => {
     historyTable = new Tabulator("#history_table", {
         layout: "fitColumns",
         minHeight: "100px",
         index: "ID",
-        progressiveLoad: "scroll",
-        paginationSize: 20,
+        paginationSize: TABULATOR_CONFIG.paginationSize,
         placeholder: "<div>Không có dữ liệu nào...!</div>",
         ajaxURL: "/api/admin/registrations",
         ajaxParams: { type: "history" },
         dataLoaderLoading: "<span>Đang tải dữ liệu...!</span>",
+        filterMode: "remote",
+        paginationMode: "remote",
+        pagination: true,
+        paginationSizeSelector: [10, 20, 50, 100, true],
+        movableColumns: true,
+        paginationCounter: "rows",
         columns: [
             { title: "ID", field: "_id", visible: false },
             {
@@ -77,7 +84,7 @@ Onload = async () => {
         minHeight: "100px",
         index: "ID",
         progressiveLoad: "scroll",
-        paginationSize: 20,
+        paginationSize: TABULATOR_CONFIG.paginationSize,
         placeholder: "<div>Không có dữ liệu nào...!</div>",
         ajaxURL: "/api/admin/registrations",
         ajaxParams: { type: "need_approved" },
@@ -192,12 +199,18 @@ Onload = async () => {
         responsiveLayout: "hide",
         minHeight: "100px",
         index: "ID",
-        progressiveLoad: "scroll",
-        paginationSize: 20,
+        paginationSize: TABULATOR_CONFIG.paginationSize,
         placeholder: "<div>Không có dữ liệu nào...!</div>",
         ajaxURL: "/api/admin/registrations",
         ajaxParams: { type: "approved" },
         dataLoaderLoading: "<span>Đang tải dữ liệu...!</span>",
+        filterMode: "remote",
+        paginationMode: "remote",
+        pagination: "local",
+        pagination: true,
+        paginationSizeSelector: [10, 20, 50, 100, true],
+        movableColumns: true,
+        paginationCounter: "rows",
         columns: [
             { title: "ID", field: "_id", visible: false },
             {
@@ -257,52 +270,16 @@ Onload = async () => {
                     return moment(value.date).hour(h).minute(m).format("HH:mm DD/MM/YYYY");
                 }
             },
-            // {
-            //     title: "Chọn",
-            //     editor: "list",
-            //     editorParams: {
-            //         values: ["Word", "Excel", "PowerPoint"],
-            //         placeholderEmpty: "Bạn đã chọn tất cả",
-            //         itemFormatter: (label, value, item, element) => {
-            //             const selects = Object.keys(selected);
-            //
-            //             for (const selector of selects) {
-            //                 if (selected[selector] == value.toLowerCase()) {
-            //                     $(element).remove();
-            //                 }
-            //             }
-            //
-            //             return `<img src="/public/images/${ label.toLowerCase() }.svg" class="pe-2"/><strong>${ label }</strong>`;
-            //         },
-            //     },
-            //     cellEdited: function (cell) {
-            //         const data = cell.getData();
-            //         const value = cell.getValue();
-            //         const oldValue = cell.getOldValue();
-            //         if (oldValue)
-            //             selected[oldValue] = "";
-            //
-            //         if (value) {
-            //             selected[value] = data._id;
-            //             checkValid();
-            //         }
-            //
-            //         updateParams();
-            //     },
-            //     formatter: (cell, formatterParams) => {
-            //         let value = cell.getValue();
-            //         if (!value)
-            //             return "";
-            //         return `<div class="d-flex justify-content-center">
-            //                     <img src="/public/images/${ value.toLowerCase() }.svg" width="24" class="me-2"/>
-            //                     <span>${ value } </span>
-            //                 </div>`
-            //     }
-            // }
         ],
     })
 
-    $("#reload").click(reload)
+    addAction();
+}
+
+function addAction() {
+    $("#reload").click(reload);
+    addEvent4Search("#history", historyTable);
+    addEvent4Search("#approved", activeTable);
 }
 
 function reload() {
@@ -318,6 +295,106 @@ function reload() {
         historyTable.dataLoader.load();
     }
     this.blur();
+}
+
+function validateDate(value) {
+    if (!value) return true;
+
+    const date = new Date(value);
+
+    if (!date || date.getFullYear() <= 2021) return true;
+
+    return false;
+}
+
+function addEvent4Search(queryString, tblTrigger) {
+    const $parent = $(queryString);
+
+    $(".search", $parent).click((e) => getFilter(tblTrigger, e));
+
+    tblTrigger.inputs = [];
+
+    const $start = $(".start", $parent);
+    const $end = $(".end", $parent);
+
+    $(".iig", $parent).click((e) => {
+        openDownload(tblTrigger, "IIG");
+    });
+
+    $(".viettelpost", $parent).click((e) => {
+        openDownload(tblTrigger, "VTP");
+    });
+
+    const date = moment().format("yyyy-MM-DD");
+
+    $start.val(date);
+    $end.val(date);
+
+    inputValidate($start, validateDate, "Ngày bắt đầu chưa đúng", null, (e) => {
+        tblTrigger.inputs.push(e)
+    });
+    inputValidate($end, validateDate, "Ngày kết thúc chưa đúng", null, (e) => {
+        tblTrigger.inputs.push(e)
+    });
+
+
+}
+
+function openDownload(table, type = "IIG") {
+    const filter = arrFilter2Obj(table.getFilters());
+    const dataType = table.options.ajaxParams.type;
+
+    const params = new URLSearchParams({ dataType, type, ...filter }).toString();
+    console.log(params);
+    open(`${ exportExcelURL }?${ params }`);
+}
+
+function arrFilter2Obj(filters) {
+    const obj = {};
+
+    for (const index in filters) {
+        for (const key in filters[index]) {
+            obj[`filter[${ index }][${ key }]`] = filters[index][key];
+        }
+    }
+    return obj;
+}
+
+function getFilter(table, e) {
+    const { parentNode } = e.target.parentNode;
+
+    if (table.inputs.length < 0) {
+        return;
+    }
+
+    for (const item of table.inputs) {
+        item.blur();
+        if (!item.valid) {
+            return;
+        }
+    }
+
+    const $start = $IV($(".start", parentNode));
+    const $end = $IV($(".end", parentNode));
+    const status = $(".status", parentNode).val();
+    const startDate = moment($start.val() + " 00:00").toDate(),
+        endDate = moment($end.val() + " 12:00").toDate();
+
+    if (endDate - startDate < 0) {
+        $end.setValid(false);
+        $end.feedback("Ngày kết thúc phải lớn hơn ngày bắt đầu");
+
+        return;
+    }
+
+    const filters = [{ field: "exam_date", type: ">=", value: startDate.getTime() },
+        { field: "exam_date", type: "=<", value: endDate.getTime() }];
+
+    if (status)
+        filters.push({ field: "is_approved", type: "=", value: status });
+
+    table.setFilter(filters);
+
 }
 
 async function changeIsApproved(is_approved, _id, reason) {

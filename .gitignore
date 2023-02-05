@@ -1,5 +1,6 @@
 /node_modules/
 /.vscode/
+/exports/*
 .env
 .idea
 package-lock.json

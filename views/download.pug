@@ -6,17 +6,35 @@ block content
 
         .h5
             span Chuyển khoản đến tài khoản với nội dung: "
-            code &lt;FILE_MOS&gt;
+            code &lt;FILEMOS&gt;
             code  &lt;mail&gt;
-            span " (tên file mos và địa chỉ mail).
-        .h5.mb-4 Sau đó file sẽ được gửi đến địa chỉ email của bạn.
-        .h6
-            span.text-danger *Số tiền chuyển khoản theo khả năng của mỗi học viên.
-        .h6
+            span " (
+            code &lt;mail&gt;
+            span  là địa chỉ email của bạn,
+            code  &lt;FILEMOS&gt;
+            span  gồm có WORD, EXCEL và PPT).
+        .h6.mb-4 Ví dụ nội dung chuyển khoản:
+        ul
+            li
+                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file WORD thì nội dung chuyển khoản sẽ như sau:&nbsp;
+                code WORD nguyenvana@gmail.com
+            li
+                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file Excel thì nội dung chuyển khoản sẽ như sau:&nbsp;
+                code EXCEL nguyenvanb@gmail.com
+            li
+                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file PowerPoint thì nội dung chuyển khoản sẽ như sau:&nbsp;
+                code PPT nguyenvanc@gmail.com
+        p.text-danger *Lưu ý: bạn phải nhập đúng địa chỉ email của bạn link download sẽ được gửi đến email của bạn ngay sau đó.
+        p.text-danger *Số tiền chuyển khoản theo khả năng của mỗi học viên.
+        p
             span.text-danger *
             span
-                span Nếu bạn đã chuyển khoản mà chưa nhận được file học tập vui lòng liên hệ:&nbsp;
-                a(href="mailto:khanhldd@huflit.edu.vn") Thầy Khánh
-                span &nbsp;qua Email:&nbsp;
-                code #{MAIL_CONTACT}
+                span Nếu bạn đã chuyển khoản sau 24h nếu chưa nhận được phản hồi về mail file học tập vui lòng liên hệ Viber/Zalo:&nbsp;
+                a(href=`tel:${ CONTACT_PHONE }`) Thầy Khánh
+                code  #{CONTACT_PHONE}
                 span  để được hổ trợ sớm nhất.
+        .row.justify-content-center.mb-4
+            .col-md-5
+                img.w-100(src=`${DOWNLOAD_IMAGE}` alt="QRpay")
+
+

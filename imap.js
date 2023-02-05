@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const Imap = require("imap"),
     inspect = require("util").inspect;
+const { sendDownloadLink } = require("./services/mail.service")
 const Banking = require("./models/banking.model");
 
 const { initDatabase } = require("./configs");
@@ -14,7 +15,7 @@ const RECEIVE_FROM = "support@timo.vn";
 
 const REGEXS = {
     HTML: /(?=<!DOCTYPE html>)(.|\n)*?(?<=<\/html>)/g,
-    DESCRIPTION: /(?<=Mô tả:)(.*)(?=\.)/g,
+    DESCRIPTION: /(?<=(Mô tả: ))(.*)(?=\.)/g,
     AMOUNT: /(?<=tăng )(.*)(?= VND)/g
 }
 
@@ -50,7 +51,6 @@ imap.once("ready", function () {
                 msg.on("body", function (stream, info) {
                     simpleParser(stream, async (err, parsed) => {
                         const headers = parsed.headers;
-                        console.log(parsed);
 
                         if (headers.size) {
                             const from = headers.get("from");
@@ -63,12 +63,10 @@ imap.once("ready", function () {
                                     statusRead = true;
                                 }
                             }
-                            console.log("statusRead: ", statusRead);
-                            console.log("html: ", parsed.html);
 
                             if (parsed.html && statusRead) {
                                 const [match] = parsed.html.match(REGEXS.HTML);
-                                const [description] = parsed.html.match(REGEXS.DESCRIPTION);
+                                let [description] = parsed.html.match(REGEXS.DESCRIPTION);
                                 let [amount] = parsed.html.match(REGEXS.AMOUNT);
 
                                 if (match) {
@@ -78,8 +76,18 @@ imap.once("ready", function () {
 
                                     console.log(description, amount, date);
 
-                                    if (description && amount && date)
-                                        Banking.create({ description, amount, date });
+                                    if (description && amount && date) {
+                                        description = description.replace("Thanh toan QR ", "");
+
+                                        const data = await Banking.create({ description, amount, date });
+                                        const arrDescription = description.split(" ");
+                                        if (arrDescription.length > 0) {
+                                            const type = arrDescription.shift(1);
+                                            const to = `${ arrDescription.shift(1) }@${ arrDescription.join(".") }`;
+                                            console.log(to);
+                                            sendDownloadLink(to, `${ process.env.DOWNLOAD_HOST }${ data._id }`)
+                                        }
+                                    }
 
                                     fs.writeFileSync("index.html", match);
                                 }

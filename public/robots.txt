@@ -1,0 +1,15 @@
+User-agent: *
+
+allow: *.js
+allow: *.css
+allow: *.svg
+allow: /*.jpg$
+allow: /*.jpeg$
+allow: /*.gif$
+allow: /*.png$
+allow: /
+allow: /registration
+allow: /lessons
+allow: /download
+
+Sitemap: https://moskhanhly.com/public/sitemap.xml

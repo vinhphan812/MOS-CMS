@@ -1,12 +1,38 @@
 extends ./layouts/common
+block head
+    style.
+        .coat-total {
+            top: 0;
+            left: 70%;
+            right: 0;
+            bottom: 0;
+        }
+        .coat-title {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            top: 60%;
+        }
+
 block content
     .p-5.shadow-sm.bg-white
-        h1.h1 Danh Sách Môn Học
+        h1.h1.mb-5 Danh Sách Môn Học
+        .row.row-cols-1.row-cols-sm-2.row-cols-md-3.justify-content-around.gx-5
+            each val in playlist
+                .col.mb-4
+                    .bg-white.shadow.h-100
+                        a(href=`https://www.youtube.com${val.url}` target="_blank").mb-4.px-0.text-decoration-none.fw-bold
+                            .position-relative
+                                img.w-100(src=val.thumbnail alt=val.title)
+                                .position-absolute.bg-white.bottom-0.badge.rounded-pill.start-0.mb-2.ms-2
+                                    .text-dark= val.publishedTimeText
+                                .position-absolute.bg-black.coat-total.bg-opacity-75
+                                    .d-flex.justify-content-center.align-items-center.text-white.h-100
+                                        span.me-1= val.videoCountShortText
+                                        i.bi.bi-list.text-white
+                            .text-muted.px-3.py-2= val.title
 
-        ol.fs-4
-            li
-                a(href="https://www.youtube.com/watch?v=aUQUmgBramg&list=PLP0uFD33A5A9ixedYlaxDW4FxkAWiYti_&index=1" target="_blank") MOS Word 2016 PASS 1000
-            li
-            li
+
+
 block script
     script(src="/public/js/lessons.js")

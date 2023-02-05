@@ -60,5 +60,11 @@ module.exports = {
             subject: "Yêu cầu đăng ký đã bị tù chối",
             content: `<p style="margin-top: 0;">Chào <strong>${ name }</strong>,</p><p>Yêu cầu đăng ký thi MOS của đã bị từ chối vì lý do: <strong>${ reason }</strong>.</p>`
         });
+    },
+    sendDownloadLink: (to, url) => {
+        send(to, {
+            subject: "Link tải File MOS",
+            content: `<p>Link tải File MOS</p><p>${ url }</p>`
+        });
     }
 }

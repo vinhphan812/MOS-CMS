@@ -1,4 +1,4 @@
-const { APP_NAME, GOOGLE_SEO_VERIFICATION, MAIL_CONTACT } = process.env;
+const { APP_NAME, GOOGLE_SEO_VERIFICATION, MAIL_CONTACT, CONTACT_PHONE, DOWNLOAD_IMAGE } = process.env;
 const User = require("../models/user.model");
 const { MENU_BY_ROLE } = require("../utils/role.enum.js");
 const moment = require("moment");
@@ -24,6 +24,8 @@ module.exports = {
         res.locals.errors = [];
 
         res.locals.MAIL_CONTACT = MAIL_CONTACT;
+        res.locals.CONTACT_PHONE = CONTACT_PHONE;
+        res.locals.DOWNLOAD_IMAGE = DOWNLOAD_IMAGE;
         res.locals.isHosting = req.hostname != "localhost";
         res.locals.isOrder = req.originalUrl == "/order";
         res.locals.moment = moment;

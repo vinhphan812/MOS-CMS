@@ -19,9 +19,11 @@ module.exports = {
     },
 
     registrationList: async (req, res, next) => {
-        const { type, page, size } = req.query;
+        const { type, page, size, filter } = req.query;
 
-        const data = await Register.getList(type, page, size);
+        console.log(filter);
+
+        const data = await Register.getList(type, page, isNaN(+size) ? 99999 : size, filter);
 
         res.json(data);
     },

@@ -5,6 +5,6 @@ const { index, downloadExcel} = require("../../controllers/admin/registration.co
 const router = Router();
 
 router.get("/", index);
-router.get("/downloadExcel", downloadExcel)
+router.get("/excel", downloadExcel)
 
 module.exports = router;

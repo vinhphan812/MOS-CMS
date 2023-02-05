@@ -7,13 +7,15 @@ module.exports = {
         res.render("admin/registrations")
     },
     downloadExcel: async (req, res, next) => {
+        const { dataType, type, filter } = req.query;
+        console.log(req.query)
         try {
-            const { data } = await Register.getList("approved", 1, 9999999);
+            const { data } = await Register.getList(dataType, 1, 9999999, filter);
 
             console.log(data);
 
 
-            const outPath = await exportExcel(data);
+            const outPath = await exportExcel(data, type);
 
             res.download(outPath, outPath.split("/")[2]);
         } catch (e) {

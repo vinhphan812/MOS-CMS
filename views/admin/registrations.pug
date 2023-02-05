@@ -4,20 +4,53 @@ block content
     .p-5.shadow-sm.bg-white
         .active.mb-5
             h1.h1.mb-4 Đăng ký
-            .d-flex.justify-content-between.align-items-center.mb-2
-                h2.h2 Đã được duyệt
-                div
-                    a.me-2.btn.btn-dark(href="/admin/registrations/downloadExcel" target="_blank")
-                        i.bi.bi-download.me-2
-                        span Tải tệp Excel
+            #approved
+                .d-flex.justify-content-between.align-items-center.mb-3
+                    h2.h2 Đã được duyệt
+                    //div
+                    //    a.me-2.btn.btn-dark(href="/admin/registrations/downloadExcel" target="_blank")
+                    //        i.bi.bi-download.me-2
+                    //        span IIG
                     button.btn.btn-secondary#reload
                         i.bi.bi-arrow-repeat
-            #active_table.mb-4
+                .row.mb-2
+                    .col-md-4.mb-md-0.mb-2
+                        input.me-2.form-control.start(type="date" name="start")
+                    .col-md-4.mb-md-0.mb-2
+                        input.me-2.form-control.end(type="date" name="end")
+                    .col-md-4.d-flex.justify-content-end.mb-md-0.mb-2
+                        button.btn.btn-secondary.me-2.search.bi.bi-search
+                        button.btn.btn-dark.me-2.iig
+                            i.bi.bi-download.me-2
+                            span IIG
+                        button.btn.btn-dark.viettelpost
+                            i.bi.bi-download.me-2
+                            span Viettel
+                #active_table.mb-4
 
-            h2.h2 Cần duyệt
+            h2.h2.mb-3 Cần duyệt
             #need_approved_table.mb-4
 
-            h2.h2 Lịch sử đăng ký
-            #history_table.mb-4
+            #history
+                h2.h2.mb-3 Lịch sử đăng ký
+                .row.mb-2
+                    .col-md-3.mb-md-0.mb-2
+                        input.me-2.form-control.start(type="date" name="start")
+                    .col-md-3.mb-md-0.mb-2
+                        input.me-2.form-control.end(type="date" name="end")
+                    .col-md-2.mb-md-0.mb-2
+                        select.me-2.form-control.status
+                            option(value="ALL") Tất cả
+                            option(value="true") Đã duyệt
+                            option(value="false") Chưa duyệt
+                    .col-md-4.d-flex.justify-content-end.align-items-start
+                        button.btn.btn-secondary.me-2.search.bi.bi-search
+                        button.btn.btn-dark.me-2.iig
+                            i.bi.bi-download.me-2
+                            span IIG
+                        button.btn.btn-dark.viettelpost
+                            i.bi.bi-download.me-2
+                            span Viettel
+                #history_table.mb-4
 block script
     script(src="/public/js/registration_admin.js")

@@ -1,4 +1,4 @@
-const { SCHEMA_OPTION, ignoreModel } = require("../utils/constaints");
+const { SCHEMA_OPTION, ignoreModel, filter2Query } = require("../utils/constaints");
 
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
@@ -21,36 +21,42 @@ const registerSchema = new Schema({
 }, SCHEMA_OPTION);
 
 registerSchema.static({
-    getList: async function (type, page = 1, size = 10) {
+    getList: async function (type, page = 1, size = 10, filters) {
         if (!["history", "need_approved", "approved"].includes(type)) return [];
 
         const date = new Date();
 
+        let filterObj = {};
+
+        if (filters) {
+            filterObj = filter2Query(filters, {
+                exam_date: {
+                    mapping: ["Word.date", "Excel.date", "PowerPoint.date"],
+                    type: "date"
+                }
+            });
+        }
+
+
         const $match = type == "need_approved" ? {
-            request: "REQUEST",
-            $or: [
-                { "Word.date": { $gt: date } },
-                { "PowerPoint.date": { $gt: date } },
-                { "Excel.date": { $gt: date } }
-            ]
-        } : type == "approved" ? {
-            is_approved: true,
-            request: "NO_REQUEST",
-            $or: [
-                { "Word.date": { $gt: date } },
-                { "PowerPoint.date": { $gt: date } },
-                { "Excel.date": { $gt: date } }
-            ]
-        } : {};
-
-        // let data = await this.find(query, null, { skip: size * (page - 1), limit: size }).populate([{
-        //     path: "Word", select: "date", match: { date: { $gt: date } }
-        // }, {
-        //     path: "Excel", select: "date"
-        // }, {
-        //     path: "PowerPoint", select: "date"
-        // }]);
-
+                request: "REQUEST",
+                $or: [
+                    { "Word.date": { $gt: date } },
+                    { "PowerPoint.date": { $gt: date } },
+                    { "Excel.date": { $gt: date } }
+                ],
+                ...filterObj
+            } :
+            type == "approved" ? {
+                is_approved: true,
+                request: "NO_REQUEST",
+                $or: [
+                    { "Word.date": { $gt: date } },
+                    { "PowerPoint.date": { $gt: date } },
+                    { "Excel.date": { $gt: date } }
+                ],
+                ...filterObj
+            } : filters ? filterObj : {};
 
         const data = await this.aggregate([
             {
