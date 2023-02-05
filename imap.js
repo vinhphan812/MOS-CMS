@@ -2,14 +2,13 @@ require("dotenv").config();
 
 const Imap = require("imap"),
     inspect = require("util").inspect;
-const { sendDownloadLink } = require("./services/mail.service")
+const { sendDownloadLink } = require("./services/mail.service");
 const Banking = require("./models/banking.model");
+const { IMAP_USER, IMAP_PASS } = process.env;
 
 const { initDatabase } = require("./configs");
 
 const { simpleParser } = require('mailparser');
-
-const fs = require("fs");
 
 const RECEIVE_FROM = "support@timo.vn";
 
@@ -21,8 +20,8 @@ const REGEXS = {
 
 
 var imap = new Imap({
-    user: "Vonguyenthuyanh0304@gmail.com",
-    password: "xmotfosmzcxpmnqf",
+    user: IMAP_USER,
+    password: IMAP_PASS,
     host: "imap.gmail.com",
     port: 993,
     tls: true,
@@ -79,11 +78,18 @@ imap.once("ready", function () {
 
                                         const data = await Banking.create({ description, amount, date });
                                         const arrDescription = description.split(" ");
-                                        if (arrDescription.length > 0) {
+                                        if (arrDescription.length > 2) {
                                             const type = arrDescription.shift(1);
                                             const to = `${ arrDescription.shift(1) }@${ arrDescription.join(".") }`;
                                             console.log(to);
-                                            sendDownloadLink(to, `${ process.env.DOWNLOAD_HOST }${ data._id }`)
+                                            if (/WORD/i.test(type)) {
+                                                sendDownloadLink(to, `https://bit.ly/3Cc1qBm`)
+                                            } else if (/EXCEL/i.test(type)) {
+                                                sendDownloadLink(to, `https://bit.ly/3A3ZcRD`)
+                                            } else if (/PPT|POWERPOINT/i.test(type)) {
+                                                sendDownloadLink(to, `https://bit.ly/3pqKI9O`)
+                                            }
+
                                         }
                                     }
                                 }

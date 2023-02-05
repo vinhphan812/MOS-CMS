@@ -2,7 +2,7 @@ extends ./layouts/common
 
 block content
     .bg-white.p-5.shadow-sm
-        h2.h2.mb-5 Hướng dẫn lấy phần mềm
+        h2.h2.mb-5 Hướng dẫn lấy file ôn tập
 
         .h5
             span Chuyển khoản đến tài khoản với nội dung: "
@@ -25,14 +25,16 @@ block content
                 span.fs-6.fw-light Trong trường hợp bạn muốn lấy file PowerPoint thì nội dung chuyển khoản sẽ như sau:&nbsp;
                 code PPT nguyenvanc@gmail.com
         p.text-danger *Lưu ý: bạn phải nhập đúng địa chỉ email của bạn link download sẽ được gửi đến email của bạn ngay sau đó.
-        p.text-danger *Số tiền chuyển khoản theo khả năng của mỗi học viên.
+        p.text-danger *Email của bạn không được chứa ký tự đặc biệt:&nbsp;
+            code nguyenvan.a@gmail.com, nguyenvana.1@gmail.com
+        p.text-danger *Số tiền ủng hộ để duy trì theo khả năng của mỗi người.
         p
             span.text-danger *
             span
                 span Nếu bạn đã chuyển khoản sau 24h nếu chưa nhận được phản hồi về mail file học tập vui lòng liên hệ Viber/Zalo:&nbsp;
                 a(href=`tel:${ CONTACT_PHONE }`) Thầy Khánh
                 code  #{CONTACT_PHONE}
-                span  để được hổ trợ sớm nhất.
+                span  để được hỗ trợ sớm nhất.
         .row.justify-content-center.mb-4
             .col-md-5
                 img.w-100(src=`${DOWNLOAD_IMAGE}` alt="QRpay")

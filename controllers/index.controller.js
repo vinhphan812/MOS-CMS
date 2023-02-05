@@ -1,6 +1,8 @@
 const { Register, Exam } = require("../models");
 const IdValidate = require("../validations/id.validate");
 const YTB = require("../modules/ytb");
+const { registerSuccess } = require("../services/mail.service");
+
 
 module.exports = {
     homePage: (req, res, next) => {
@@ -23,6 +25,7 @@ module.exports = {
             }
 
             const data = await Register.create({ ...body, ...registrations });
+            registerSuccess(data.email, { name: data.name });
 
             res.redirect(`/registration/${ data._id }`);
         } catch (e) {

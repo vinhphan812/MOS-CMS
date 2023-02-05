@@ -3,14 +3,14 @@ extends ../layouts/common
 block content
     h1 Quản lý
     .row.mb-4
-        .col-md-6.mb-4.mb-md-0
-            a.card.align-items-center.text-decoration-none(href="#")
+        .col-md-6.mb-4.mb-md-0.h-100
+            a.card.align-items-center.text-decoration-none(href="/admin/banking")
                 img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
                 .card-body.text-center
                     h5.card-title.text-black Chuyển khoản
-                    p.card-text.text-muted Quản lý môn học
+                    p.card-text.text-muted Quản lý chuyển khoản
 
-        .col-md-6
+        .col-md-6.h-100
             a.card.align-items-center.text-decoration-none(href="/admin/exams")
                 img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
                 .card-body.text-center
@@ -18,14 +18,14 @@ block content
                     p.card-text.text-muted Quản lý đợt đăng ký thi
     .row
         .col-md-6.mb-4.mb-md-0
-            a.card.align-items-center.text-decoration-none(href="/admin/times")
+            a.card.align-items-center.text-decoration-none.h-100(href="/admin/times")
                 img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
                 .card-body.text-center
                     h5.card-title.text-black Giờ Thi
                     p.card-text.text-muted Quản lý các giờ thi cố định
         .col-md-6
-            a.card.align-items-center.text-decoration-none(href="/admin/registrations")
-                img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
+            a.card.align-items-center.text-decoration-none.p-2.h-100(href="/admin/registrations")
+                img.img-fluid.rounded-start(src='/public/images/registration.png' width="64px")
                 .card-body.text-center
                     h5.card-title.text-black Đăng ký
                     p.card-text.text-muted Quản lý danh sách đăng ký
