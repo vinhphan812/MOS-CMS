@@ -37,7 +37,7 @@ module.exports = {
             description: "",
             keywords: [],
             url: "https://" + req.hostname + req.url,
-            image: "https://" + req.hostname + "/public/favicon.ico",
+            image: "https://" + req.hostname + "/public/logo.png",
         };
 
         // saving path for check
