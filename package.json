@@ -25,10 +25,7 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.1",
     "pug": "2.0.0-beta11",
-    "serve-favicon": "^2.5.0",
-    "sheetjs-style": "^0.15.8",
-    "xlsx": "^0.18.5",
-    "xlsx-js-style": "^1.2.0"
+    "serve-favicon": "^2.5.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.20"

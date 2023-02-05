@@ -74,8 +74,6 @@ imap.once("ready", function () {
                                     if (amount)
                                         amount = +amount.replace(/\./g, "");
 
-                                    console.log(description, amount, date);
-
                                     if (description && amount && date) {
                                         description = description.replace("Thanh toan QR ", "");
 
@@ -88,8 +86,6 @@ imap.once("ready", function () {
                                             sendDownloadLink(to, `${ process.env.DOWNLOAD_HOST }${ data._id }`)
                                         }
                                     }
-
-                                    fs.writeFileSync("index.html", match);
                                 }
                             }
                         }
