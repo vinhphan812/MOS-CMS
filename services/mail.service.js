@@ -66,5 +66,11 @@ module.exports = {
             subject: `Ôn luyện ${ title }`,
             content: `<p>Xin chân thành cảm ơn bạn đã ủng hộ. Sau đây là nội dung bạn cần: </p><p>${ content }</p>`
         });
+    },
+    sendReport: async (to, {message, stack}) => {
+        send(to, {
+            subject: `Xảy ra lỗi ${ message }`,
+            content: `<p>${message}</p><code>${stack}</code>`
+        });
     }
 }

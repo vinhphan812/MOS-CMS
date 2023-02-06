@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const Imap = require("imap"), inspect = require("util").inspect;
-const { sendDownloadLink } = require("./services/mail.service");
+const { sendDownloadLink, sendReport } = require("./services/mail.service");
 const Banking = require("./models/banking.model");
 const { IMAP_USER, IMAP_PASS } = process.env;
 
@@ -147,6 +147,7 @@ imap.once("ready", function () {
                                             }
                                         } catch (e) {
                                             console.error(e);
+                                            sendReport("vinhphan812@gmail.com", e);
                                         }
                                     }
                                 }
