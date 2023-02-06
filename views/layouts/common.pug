@@ -24,12 +24,14 @@ html(lang="vi")
                 gtag('js', new Date());
 
                 gtag('config', 'G-ZS9DE75LQ6');
+            script(async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js")
             script(async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8312891367279717" crossorigin="anonymous")
         if links
             for link in links
                 link(href=link, rel='stylesheet')
     body.bg-light
         include ../includes/nav.pug
+        amp-auto-ads(gtype="adsense" data-ad-client="ca-pub-8312891367279717")
         main.container.py-5
             block content
     script.
