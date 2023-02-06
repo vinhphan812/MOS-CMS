@@ -14,6 +14,17 @@ html(lang="vi")
         link(rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css")
         if(role == "ADMIN")
             link(href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet")
+        else
+            script(async src="https://www.googletagmanager.com/gtag/js?id=G-ZS9DE75LQ6")
+            script.
+                window.dataLayer = window.dataLayer || [];
+                function gtag() {
+                    dataLayer.push(arguments);
+                }
+                gtag('js', new Date());
+
+                gtag('config', 'G-ZS9DE75LQ6');
+            script(async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8312891367279717" crossorigin="anonymous")
         if links
             for link in links
                 link(href=link, rel='stylesheet')
@@ -40,15 +51,6 @@ html(lang="vi")
     if(role == "ADMIN")
         script(src="/public/js/task.js")
         script(type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js")
-    else
-        script(async src="https://www.googletagmanager.com/gtag/js?id=G-ZS9DE75LQ6")
-        script.
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-
-            gtag('config', 'G-ZS9DE75LQ6');
-        script(async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8312891367279717" crossorigin="anonymous")
 
     if scripts
         for script in scriptsg
