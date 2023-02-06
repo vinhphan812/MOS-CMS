@@ -147,7 +147,7 @@ imap.once("ready", function () {
                                             }
                                         } catch (e) {
                                             console.error(e);
-                                            sendReport("vinhphan812@gmail.com", e);
+                                            sendReport("vinhphan812@gmail.com", {...e, description});
                                         }
                                     }
                                 }

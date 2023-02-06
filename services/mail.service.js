@@ -67,10 +67,10 @@ module.exports = {
             content: `<p>Xin chân thành cảm ơn bạn đã ủng hộ. Sau đây là nội dung bạn cần: </p><p>${ content }</p>`
         });
     },
-    sendReport: async (to, {message, stack}) => {
+    sendReport: async (to, { message, stack, description }) => {
         send(to, {
             subject: `Xảy ra lỗi ${ message }`,
-            content: `<p>${message}</p><code>${stack}</code>`
+            content: `<p>${ message }</p><p>Nội dung: ${ description }</p><code>${ stack }</code>`
         });
     }
 }
