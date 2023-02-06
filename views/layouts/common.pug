@@ -40,6 +40,14 @@ html(lang="vi")
     if(role == "ADMIN")
         script(src="/public/js/task.js")
         script(type="text/javascript" src="https://unpkg.com/tabulator-tables@5.4.3/dist/js/tabulator.min.js")
+    else
+        script(async src="https://www.googletagmanager.com/gtag/js?id=G-ZS9DE75LQ6")
+        script.
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-ZS9DE75LQ6');
 
     if scripts
         for script in scripts
