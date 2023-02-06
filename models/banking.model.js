@@ -8,6 +8,9 @@ const bankingSchema = new Schema(
         amount: { type: Number, default: 0 },
         description: { type: String, default: "" },
         date: Date,
+        status: { type: Boolean, default: false },
+        email: { type: String, default: "" },
+        sendType: { type: String, default: "" }
     },
     SCHEMA_OPTION
 );

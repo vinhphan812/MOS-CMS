@@ -1,4 +1,4 @@
-const { Times, Exam, Register } = require("../../models");
+const { Times, Exam, Register, Banking } = require("../../models");
 module.exports = {
     index: (req, res, next) => {
         res.json({ success: true, message: "ADMIN" });
@@ -26,6 +26,12 @@ module.exports = {
         const data = await Register.getList(type, page, isNaN(+size) ? 99999 : size, filter);
 
         res.json(data);
+    },
+
+    bankingList: async (req, res, next) => {
+        let data = await Banking.find({});
+
+        res.json({ data });
     },
 
     doing: async (req, res, next) => {

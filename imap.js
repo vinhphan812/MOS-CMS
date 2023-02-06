@@ -1,25 +1,24 @@
 require("dotenv").config();
 
-const Imap = require("imap"),
-    inspect = require("util").inspect;
+const Imap = require("imap"), inspect = require("util").inspect;
 const { sendDownloadLink } = require("./services/mail.service");
 const Banking = require("./models/banking.model");
 const { IMAP_USER, IMAP_PASS } = process.env;
 
 const { initDatabase } = require("./configs");
 
-const { simpleParser } = require('mailparser');
+const { simpleParser } = require("mailparser");
 
 const RECEIVE_FROM = "support@timo.vn";
 
 const REGEXS = {
     HTML: /(?=<!DOCTYPE html>)(.|\n)*?(?<=<\/html>)/g,
     DESCRIPTION: /(?<=(Mô tả: ))(.*)(?=\.)/g,
-    AMOUNT: /(?<=tăng )(.*)(?= VND)/g
-}
+    AMOUNT: /(?<=tăng )(.*)(?= VND)/g,
+    EMAIL: /^[a-z][a-z0-9_\.]{5,32}(0a0|@)[a-z0-9]{2,}((0dot0|.)[a-z0-9]{2,4}){1,3}/i,
+};
 
-
-var imap = new Imap({
+const imap = new Imap({
     user: IMAP_USER,
     password: IMAP_PASS,
     host: "imap.gmail.com",
@@ -29,21 +28,21 @@ var imap = new Imap({
 });
 
 function openInbox(cb) {
-    imap.openBox("INBOX", true, cb);
+    imap.openBox("Timo", true, cb);
 }
 
 imap.once("ready", function () {
     console.log("Imap Mail Service Running");
+
     openInbox(function (err, box) {
         if (err) throw err;
 
-        imap.on('mail', (mail) => {
+        imap.on("mail", (mail) => {
             console.log("new: ", mail);
 
             var f = imap.seq.fetch(box.messages.total + ":*", {
-                bodies: ["HEADER.FIELDS (FROM TO SUBJECT DATE BODY)", "TEXT"],
+                bodies: ["HEADER.FIELDS (FROM TO SUBJECT DATE BODY)", "TEXT",],
             });
-
 
             f.on("message", function (msg, seqno) {
                 let statusRead = false, date = false;
@@ -54,8 +53,7 @@ imap.once("ready", function () {
                         if (headers.size) {
                             const from = headers.get("from");
 
-                            if (parsed.date)
-                                date = parsed.date;
+                            if (parsed.date) date = parsed.date;
 
                             if (from) {
                                 if (from.value.length && from.value[0].address == RECEIVE_FROM) {
@@ -69,38 +67,94 @@ imap.once("ready", function () {
                                 let [amount] = parsed.html.match(REGEXS.AMOUNT);
 
                                 if (match) {
-
-                                    if (amount)
-                                        amount = +amount.replace(/\./g, "");
+                                    if (amount) amount = +amount.replace(/\./g, "");
 
                                     if (description && amount && date) {
                                         description = description.replace("Thanh toan QR ", "");
 
-                                        const data = await Banking.create({ description, amount, date });
-                                        const arrDescription = description.split(" ");
-                                        if (arrDescription.length > 2) {
-                                            const type = arrDescription.shift(1);
-                                            const to = `${ arrDescription.shift(1) }@${ arrDescription.join(".") }`;
-                                            console.log(to);
-                                            if (/WORD/i.test(type)) {
-                                                sendDownloadLink(to, `https://bit.ly/3Cc1qBm`)
-                                            } else if (/EXCEL/i.test(type)) {
-                                                sendDownloadLink(to, `https://bit.ly/3A3ZcRD`)
-                                            } else if (/PPT|POWERPOINT/i.test(type)) {
-                                                sendDownloadLink(to, `https://bit.ly/3pqKI9O`)
-                                            }
+                                        console.log(description);
 
+                                        const data = await Banking.create({
+                                            description, amount, date,
+                                        });
+                                        const arrDescription = description.split(" ");
+                                        try {
+                                            if (arrDescription.length > 1) {
+                                                const [type] = arrDescription.shift(1).match(/Word|Excel|PowerPoint|PPT/i);
+                                                let to = "";
+                                                if (REGEXS.EMAIL.test(arrDescription[0])) {
+                                                    let [matcher] = arrDescription[0].match(REGEXS.EMAIL);
+
+                                                    if (/.CT$/.test(matcher)) matcher = matcher.replace(/.CT$/, "");
+
+                                                    to = matcher.replace(/0a0/i, "@").replace(/0dot0/i, ".");
+                                                } else if (arrDescription.length > 1) {
+                                                    to = `${ arrDescription.shift(1) }@${ arrDescription.join(".") }`;
+                                                } else {
+                                                    to = arrDescription[0];
+                                                }
+
+                                                if (!/@/.test(to)) to = to.replace(/gmail.com/i, "@gmail.com");
+
+                                                console.log(`SEND FILE ${ type } to ${ to }`);
+
+                                                let isSend = false,
+                                                    sendType = "";
+                                                if (/WORD/i.test(type)) {
+                                                    await sendDownloadLink(to, {
+                                                        title: "Word", content: `<p>Link full Đề Thi: <a href="https://bit.ly/2NYrnKb">https://bit.ly/2NYrnKb</a> (clip youtube - cách làm với đề xem trong này)</p>
+                                                              <p class="danger">*Chú ý: </p>
+                                                              <p>Project 6 xem thêm: <a href="https://youtu.be/ynC06z_L_y0">https://youtu.be/ynC06z_L_y0</a> </p>
+                                                              <p>Project 11 Xem Thêm: <a href="https://youtu.be/AA9wkeWk9-Q">https://youtu.be/AA9wkeWk9-Q</a> </p>
+                                                              <p>Project 15  Xem thêm: <a href="https://youtu.be/5Y-pDN73Uzw">https://youtu.be/5Y-pDN73Uzw</a> </p>
+                                                              <p>Project 16 Xem Thêm: <a href="https://youtu.be/LoSWzf_BwIw">https://youtu.be/LoSWzf_BwIw</a> </p>
+                                                              <p>File Project Word : <a href="https://bit.ly/3Cc1qBm">https://bit.ly/3Cc1qBm</a> (download file về thực hành)</p>`,
+                                                    });
+                                                    isSend = true;
+                                                    sendType = "Word";
+
+                                                } else if (/EXCEL/i.test(type)) {
+                                                    await sendDownloadLink(to, {
+                                                        title: "Excel", content: `<p>Link full Đề Thi : <a hre="https://bit.ly/3bRiPlF">https://bit.ly/3bRiPlF</a> (clip youtube - cách làm với đề xem trong này)</p>
+                                                              <p class="danger">*Chú ý: </p>
+                                                              <p>Project 05 xem thêm: <a hre="https://youtu.be/4QZV1VWrtJM">https://youtu.be/4QZV1VWrtJM</a></p>
+                                                              <p>Project 10 xem thêm: <a hre="https://youtu.be/bGNlwmJsBX0">https://youtu.be/bGNlwmJsBX0</a></p>
+                                                              <p>Project 11 xem thêm: <a hre="https://youtu.be/bGNlwmJsBX0">https://youtu.be/bGNlwmJsBX0</a></p>
+                                                              <p>File Project Excel: <a hre="https://bit.ly/3A3ZcRD">https://bit.ly/3A3ZcRD</a> (download file về thực hành)</p>`,
+                                                    });
+
+                                                    isSend = true;
+                                                    sendType = "Excel";
+                                                } else if (/PPT|POWERPOINT/i.test(type)) {
+                                                    await sendDownloadLink(to, {
+                                                        title: "PowerPoint", content: `<p>Link full đề thi : <a href="https://bit.ly/3nXxC0v">https://bit.ly/3nXxC0v</a> (clip youtube - cách làm với đề xem trong này)</p>
+                                                              <p>Link Project PPT : <a href="https://bit.ly/3pqKI9O">https://bit.ly/3pqKI9O</a> (download file về thực hành)</p>`,
+                                                    });
+                                                    isSend = true;
+                                                    sendType = "PowerPoint";
+                                                }
+
+                                                if (isSend) {
+                                                    await Banking.updateOne({ _id: data._id }, {
+                                                        $set: {
+                                                            status: true,
+                                                            email: to,
+                                                            sendType
+                                                        }
+                                                    });
+                                                }
+
+                                            }
+                                        } catch (e) {
+                                            console.log(e);
                                         }
                                     }
                                 }
                             }
                         }
-                    })
+                    });
                 });
 
-                msg.once("attributes", function (attrs) {
-                    console.log("Attributes: %s", inspect(attrs, false, 8));
-                });
                 msg.once("end", function () {
                     console.log("Finished");
                 });
@@ -110,13 +164,10 @@ imap.once("ready", function () {
             });
             f.once("end", function () {
                 console.log("Done fetching all messages!");
-                // imap.end();
             });
-
         });
-    })
+    });
 });
-
 
 imap.once("error", function (err) {
     console.log(err);

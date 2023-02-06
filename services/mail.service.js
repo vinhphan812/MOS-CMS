@@ -61,10 +61,10 @@ module.exports = {
             content: `<p style="margin-top: 0;">Chào <strong>${ name }</strong>,</p><p>Yêu cầu đăng ký thi MOS của đã bị từ chối vì lý do: <strong>${ reason }</strong>.</p>`
         });
     },
-    sendDownloadLink: (to, url) => {
+    sendDownloadLink: (to, { content, title }) => {
         send(to, {
-            subject: "Link tải File MOS",
-            content: `<p>Link tải File MOS</p><p>${ url }</p>`
+            subject: `Ôn luyện ${ title }`,
+            content: `<p>Xin chân thành cảm ơn bạn đã ủng hộ. Sau đây là nội dung bạn cần: </p><p>${ content }</p>`
         });
     }
 }

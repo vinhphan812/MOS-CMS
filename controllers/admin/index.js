@@ -7,5 +7,8 @@ module.exports = {
         res.locals.data = Attributes.find({});
 
         res.render("admin/settings")
+    },
+    bankingPage: (req, res, next) => {
+        res.render("admin/banking");
     }
 }

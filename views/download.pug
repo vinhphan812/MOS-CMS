@@ -10,24 +10,47 @@ block content
             code  &lt;mail&gt;
             span " (
             code &lt;mail&gt;
-            span  là địa chỉ email của bạn,
+            span  là địa chỉ email của bạn được chuyển hóa bằng công cụ,
             code  &lt;FILEMOS&gt;
             span  gồm có WORD, EXCEL và PPT).
         .h6.mb-4 Ví dụ nội dung chuyển khoản:
         ul
             li
-                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file WORD thì nội dung chuyển khoản sẽ như sau:&nbsp;
-                code WORD nguyenvana@gmail.com
+                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file WORD về mail&nbsp;
+                strong nguyenvana@gmail.com&nbsp;
+                span thì nội dung chuyển khoản sẽ như sau:&nbsp;
+                code WORD nguyenvana0a0@gmail0dot0com
             li
-                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file Excel thì nội dung chuyển khoản sẽ như sau:&nbsp;
-                code EXCEL nguyenvanb@gmail.com
+                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file Excel về mail&nbsp;
+                strong nguyenvanb@gmail.com&nbsp;
+                span thì nội dung chuyển khoản sẽ như sau:&nbsp;
+                code EXCEL nguyenvanb0a0gmail0dot0com
             li
-                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file PowerPoint thì nội dung chuyển khoản sẽ như sau:&nbsp;
-                code PPT nguyenvanc@gmail.com
+                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file PowerPoint về mail&nbsp;
+                strong nguyenvanc@gmail.com&nbsp;
+                span thì nội dung chuyển khoản sẽ như sau:&nbsp;
+                code PPT nguyenvanc0a0gmail0dot0com
+        p.fs-6.text-danger
+            span *Khi đó&nbsp;
+            code.border "@"
+            span  sẽ chuyển thành&nbsp;
+            code.border "0a0"
+            span , và&nbsp;
+            code.border "."
+            span  sẽ chuyển thành&nbsp;
+            code.border "0dot0"
         p.text-danger *Lưu ý: bạn phải nhập đúng địa chỉ email của bạn link download sẽ được gửi đến email của bạn ngay sau đó.
-        p.text-danger *Email của bạn không được chứa ký tự đặc biệt:&nbsp;
-            code nguyenvan.a@gmail.com, nguyenvana.1@gmail.com
         p.text-danger *Số tiền ủng hộ để duy trì theo khả năng của mỗi người.
+
+        .mb-4
+            h4.h4 Chuyển đổi email trong nội dung chuyển khoản
+            .alert.alert-danger.mx-2 - Do một số ngân hàng không cho phép nội dung chuyển khoản có chứa ký tự đặc biệt như "@", "." nên cần phải chuyển đổi để việc gửi mail được hoàn thành tốt
+            .input-group
+                input.form-control(type="text" id="user-email" placeholder="Email bạn muốn chuyển đổi")
+                input.form-control(type="text" id="res-email" placeholder="Email đã chuyển đổi")
+        .row.justify-content-center.mb-4
+            .col-md-5
+                img.w-100(src=`${ DOWNLOAD_IMAGE }` alt="QRpay")
         p
             span.text-danger *
             span
@@ -35,8 +58,18 @@ block content
                 a(href=`tel:${ CONTACT_PHONE }`) Thầy Khánh
                 code  #{CONTACT_PHONE}
                 span  để được hỗ trợ sớm nhất.
-        .row.justify-content-center.mb-4
-            .col-md-5
-                img.w-100(src=`${DOWNLOAD_IMAGE}` alt="QRpay")
-
+block script
+    script.
+        Onload = () => {
+            const $res = $("#res-email");
+            const $req = $("#user-email");
+            $req.keyup(function (e) {
+                 const value = this.value;
+                $res.val(value.replace(/@/g, "0a0").replace(/\./g, "0dot0"));
+            });
+            $res.keyup(function (e) {
+                const value = this.value;
+                $req.val(value.replace(/0a0/g, "@").replace(/0dot0/g, "."));
+            })
+        }
 
