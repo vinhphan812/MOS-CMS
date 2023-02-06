@@ -5,6 +5,20 @@ html(lang="vi")
         include ../includes/seo.pug
         //- link(rel="manifest" href="/public/manifest.json")
         //link(rel="icon" type="image/x-icon" href="/public/favicon.ico")
+        
+        if !role
+            <!-- Google tag (gtag.js) -->
+            script(async src="https://www.googletagmanager.com/gtag/js?id=G-ZS9DE75LQ6")
+            script.
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+
+                gtag('config', 'G-ZS9DE75LQ6');
+
+            script(async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js")
+            script(async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8312891367279717" crossorigin="anonymous")
+
         meta(charset='utf-8')
         meta(name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no')
         link(href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU' crossorigin='anonymous')
@@ -14,18 +28,6 @@ html(lang="vi")
         link(rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css")
         if(role == "ADMIN")
             link(href="https://unpkg.com/tabulator-tables@5.4.3/dist/css/tabulator.min.css" rel="stylesheet")
-        else
-            script(async src="https://www.googletagmanager.com/gtag/js?id=G-ZS9DE75LQ6")
-            script.
-                window.dataLayer = window.dataLayer || [];
-                function gtag() {
-                    dataLayer.push(arguments);
-                }
-                gtag('js', new Date());
-
-                gtag('config', 'G-ZS9DE75LQ6');
-            script(async custom-element="amp-auto-ads" src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js")
-            script(async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8312891367279717" crossorigin="anonymous")
         if links
             for link in links
                 link(href=link, rel='stylesheet')
