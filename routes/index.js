@@ -5,7 +5,8 @@ const {
     registrationHandle,
     registrationPageSuccess,
     downloadPage,
-    lessonsPage
+    lessonsPage,
+    privacyPage
 } = require("../controllers/index.controller");
 const authRoute = require("./auth.route");
 const adminRoute = require("./admin/");
@@ -30,5 +31,7 @@ router.post("/registration", upload("banking").single("bankingImage"), registrat
 router.get("/registration/:id", registrationPageSuccess);
 
 router.get("/lessons", lessonsPage);
+
+router.get("/privacy", privacyPage);
 
 module.exports = router;

@@ -77,5 +77,8 @@ module.exports = {
         } catch (e) {
             next(e)
         }
+    },
+    privacyPage: (req, res, next) => {
+        res.render("privacy");
     }
 }
