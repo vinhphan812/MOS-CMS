@@ -115,12 +115,12 @@ imap.once("ready", function () {
 
                                                 } else if (/EXCEL/i.test(type)) {
                                                     await sendDownloadLink(to, {
-                                                        title: "Excel", content: `<p>Link full Đề Thi : <a hre="https://bit.ly/3bRiPlF">https://bit.ly/3bRiPlF</a> (clip youtube - cách làm với đề xem trong này)</p>
+                                                        title: "Excel", content: `<p>Link full Đề Thi : <a href="https://bit.ly/3bRiPlF">https://bit.ly/3bRiPlF</a> (clip youtube - cách làm với đề xem trong này)</p>
                                                               <p class="danger">*Chú ý: </p>
-                                                              <p>Project 05 xem thêm: <a hre="https://youtu.be/4QZV1VWrtJM">https://youtu.be/4QZV1VWrtJM</a></p>
-                                                              <p>Project 10 xem thêm: <a hre="https://youtu.be/bGNlwmJsBX0">https://youtu.be/bGNlwmJsBX0</a></p>
-                                                              <p>Project 11 xem thêm: <a hre="https://youtu.be/bGNlwmJsBX0">https://youtu.be/bGNlwmJsBX0</a></p>
-                                                              <p>File Project Excel: <a hre="https://bit.ly/3A3ZcRD">https://bit.ly/3A3ZcRD</a> (download file về thực hành)</p>`,
+                                                              <p>Project 05 xem thêm: <a href="https://youtu.be/4QZV1VWrtJM">https://youtu.be/4QZV1VWrtJM</a></p>
+                                                              <p>Project 10 xem thêm: <a href="https://youtu.be/bGNlwmJsBX0">https://youtu.be/bGNlwmJsBX0</a></p>
+                                                              <p>Project 11 xem thêm: <a href="https://youtu.be/bGNlwmJsBX0">https://youtu.be/bGNlwmJsBX0</a></p>
+                                                              <p>File Project Excel: <a href="https://bit.ly/3A3ZcRD">https://bit.ly/3A3ZcRD</a> (download file về thực hành)</p>`,
                                                     });
 
                                                     isSend = true;
