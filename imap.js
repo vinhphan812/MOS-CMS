@@ -70,7 +70,7 @@ imap.once("ready", function () {
                                     if (amount) amount = +amount.replace(/\./g, "");
 
                                     if (description && amount && date) {
-                                        description = description.replace(/Thanh toan QR |QR - /g, "");
+                                        description = description.replace(/Thanh toan QR |QR - (.*) Chuyen tien |QR - /g, "");
 
                                         console.log(description);
 
@@ -145,10 +145,9 @@ imap.once("ready", function () {
                                                 }
 
                                             }
-                                        } catch (e) {
-                                            console.error(e);
-                                            e.description = description;
-                                            sendReport("vinhphan812@gmail.com", e);
+                                        } catch ({ message, stack }) {
+                                            console.error(message, stack);
+                                            sendReport("vinhphan812@gmail.com", { megssage, stack });
                                         }
                                     }
                                 }
