@@ -146,7 +146,7 @@ imap.once("ready", function () {
 
                                             }
                                         } catch (e) {
-                                            console.log(e);
+                                            console.error(e);
                                         }
                                     }
                                 }
