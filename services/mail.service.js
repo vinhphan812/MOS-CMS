@@ -70,7 +70,7 @@ module.exports = {
     sendReport: async (to, { message, stack, description }) => {
         send(to, {
             subject: `Xảy ra lỗi ${ message }`,
-            content: `<p>${ message }</p><p>Nội dung: ${ description }</p><code>${ stack }</code>`
+            content: `<p>${ message }</p>${ description ? `<p>Nội dung: ${ description }</p>` : "" }<code>${ stack }</code>`
         });
     }
 }

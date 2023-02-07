@@ -158,6 +158,7 @@ imap.once("ready", function () {
                 });
             });
             f.once("error", function (err) {
+                sendReport(to, err);
                 console.log("Fetch error: " + err);
             });
             f.once("end", function () {
