@@ -173,6 +173,7 @@ imap.once("error", function (err) {
 
 imap.once("end", function () {
     console.log("Connection ended");
+    imap.connect();
 });
 
 imap.connect();
