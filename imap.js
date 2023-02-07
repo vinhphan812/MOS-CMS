@@ -80,7 +80,7 @@ imap.once("ready", function () {
                                         const arrDescription = description.split(" ");
                                         try {
                                             if (arrDescription.length > 1) {
-                                                const [type] = description.shift(1).match(/Word|Excel|PowerPoint|PPT/i);
+                                                const [type] = description.match(/Word|Excel|PowerPoint|PPT/i);
                                                 let to = "";
                                                 if (REGEXS.EMAIL.test(description)) {
                                                     let [matcher] = description.match(REGEXS.EMAIL);
