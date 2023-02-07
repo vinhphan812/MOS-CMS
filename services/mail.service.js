@@ -63,7 +63,7 @@ module.exports = {
     },
     sendDownloadLink: (to, { content, title }) => {
         send(to, {
-            subject: `Ôn luyện ${ title }`,
+            subject: `Ôn luyện ${ title } - ${ to }`,
             content: `<p>Xin chân thành cảm ơn bạn đã ủng hộ. Sau đây là nội dung bạn cần: </p><p>${ content }</p>`
         });
     },
