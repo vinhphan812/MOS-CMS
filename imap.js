@@ -15,7 +15,8 @@ const REGEXS = {
     HTML: /(?=<!DOCTYPE html>)(.|\n)*?(?<=<\/html>)/g,
     DESCRIPTION: /(?<=(Mô tả: ))(.*)(?=\.)/g,
     AMOUNT: /(?<=tăng )(.*)(?= VND)/g,
-    EMAIL: /^[a-z][a-z0-9_\.]{5,32}(0a0|@)[a-z0-9]{2,}((0dot0|.)[a-z0-9]{2,4}){1,3}/i,
+    EMAIL: /[a-z][a-z0-9_\.]{5,32}(0a0|@)[a-z0-9]{2,}((0dot0|\.)[a-z0-9]{2,4}){1,3}/i,
+    TYPE: /Word|Excel|PowerPoint|PPT/i
 };
 
 const imap = new Imap({
@@ -72,15 +73,13 @@ imap.once("ready", function () {
                                     if (description && amount && date) {
                                         description = description.replace(/Thanh toan QR |QR - (.*) Chuyen tien |QR - /g, "");
 
-                                        console.log(description);
-
                                         const data = await Banking.create({
                                             description, amount, date,
                                         });
-                                        const arrDescription = description.split(" ");
+
                                         try {
-                                            if (arrDescription.length > 1) {
-                                                const [type] = description.match(/Word|Excel|PowerPoint|PPT/i);
+                                            if (description) {
+                                                const [type] = REGEXS.TYPE.test(description) ? description.match(REGEXS.TYPE) : "";
                                                 let to = "";
                                                 if (REGEXS.EMAIL.test(description)) {
                                                     let [matcher] = description.match(REGEXS.EMAIL);
@@ -169,6 +168,7 @@ imap.once("ready", function () {
 });
 
 imap.once("error", function (err) {
+    sendReport("vinhphan812@gmail.com", "")
     console.log(err);
 });
 
