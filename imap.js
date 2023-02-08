@@ -168,7 +168,7 @@ imap.once("ready", function () {
 });
 
 imap.once("error", function (err) {
-    sendReport("vinhphan812@gmail.com", "")
+    sendReport("vinhphan812@gmail.com", err);
     console.log(err);
 });
 
