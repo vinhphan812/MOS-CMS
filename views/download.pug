@@ -6,30 +6,13 @@ block content
 
         .h5
             span Chuyển khoản đến tài khoản với nội dung: "
-            code &lt;FILEMOS&gt;
+            code &lt;MÔN&gt;
             code  &lt;mail&gt;
             span " (
             code &lt;mail&gt;
             span  là địa chỉ email của bạn được chuyển hóa bằng công cụ,
-            code  &lt;FILEMOS&gt;
-            span  gồm có WORD, EXCEL và PPT).
-        .h6.mb-4 Ví dụ nội dung chuyển khoản:
-        ul
-            li
-                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file WORD về mail&nbsp;
-                strong nguyenvana@gmail.com&nbsp;
-                span thì nội dung chuyển khoản sẽ như sau:&nbsp;
-                code WORD nguyenvana0a0@gmail0dot0com
-            li
-                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file Excel về mail&nbsp;
-                strong nguyenvanb@gmail.com&nbsp;
-                span thì nội dung chuyển khoản sẽ như sau:&nbsp;
-                code EXCEL nguyenvanb0a0gmail0dot0com
-            li
-                span.fs-6.fw-light Trong trường hợp bạn muốn lấy file PowerPoint về mail&nbsp;
-                strong nguyenvanc@gmail.com&nbsp;
-                span thì nội dung chuyển khoản sẽ như sau:&nbsp;
-                code PPT nguyenvanc0a0gmail0dot0com
+            code  &lt;MÔN&gt;
+            span  gồm có WORD, EXCEL và PPT)
         p.fs-6.text-danger
             span *Khi đó&nbsp;
             code.border "@"
@@ -45,12 +28,32 @@ block content
         .mb-4
             h4.h4 Chuyển đổi email trong nội dung chuyển khoản
             .alert.alert-danger.mx-2 - Do một số ngân hàng không cho phép nội dung chuyển khoản có chứa ký tự đặc biệt như "@", "." nên cần phải chuyển đổi để việc gửi mail được hoàn thành tốt
-            .input-group
-                input.form-control(type="text" id="user-email" placeholder="Email bạn muốn chuyển đổi")
-                input.form-control(type="text" id="res-email" placeholder="Email đã chuyển đổi")
+            .input-group.mb-2
+                select#subject.form-select()
+                    option(selected value="none") Chọn Môn
+                    option(value="Word") Word
+                    option(value="Excel") Excel
+                    option(value="PPT") PowerPoint
+                i.input-group-text.bi.bi-arrow-right
+                input.form-control(type="text" id="user-email" placeholder="Email Của Bạn")
+            label.ms-2.mb-1(for="res-email") Nội dung chuyển khoản
+            .position-relative
+                input.form-control(type="text" id="res-email" placeholder="Tin Nhắn Gửi")
+                button.btn.bi.bi-clipboard.position-absolute.top-0.end-0#copy
         .row.justify-content-center.mb-4
             .col-md-5
                 img.w-100(src=`${ DOWNLOAD_IMAGE }` alt="QRpay")
+        ul
+            li Số TK: 8007041113228 
+            li Chủ TK: LY DOAN DUY KHANH 
+            li Tên NH: Viet Capital Bank - Ngân hàng TMCP Bản Việt
+
+        span.text-danger Các bạn nhớ kiểm tra thư mục hộp thư đến ( inbox ) trong email  và thư mục spam trong email. Dùng Winrar giải nén ra sử dụng file.
+
+        h4.h4.mb-4 Download như hình dưới đây : 
+        .row.justify-content-center.mb-4
+            .col-md-5
+                img.w-100(src="/public/images/vidu.png" alt="Download")
         p
             span.text-danger *
             span
@@ -63,13 +66,42 @@ block script
         Onload = () => {
             const $res = $("#res-email");
             const $req = $("#user-email");
+            const $type = $("#subject");
+            const $copy = $("#copy");
+
+            $copy.click((e) => {
+                var copyText = document.getElementById("res-email");
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(copyText.value);
+            })
+
             $req.keyup(function (e) {
-                 const value = this.value;
-                $res.val(value.replace(/@/g, "0a0").replace(/\./g, "0dot0"));
+                const types = $res.val().match(/Word|Excel|PPT|PowerPoint/i);
+                const value = this.value.replace(/Word |Excel |PPT |PowerPoint /i, "");
+                
+                if(!types) {
+                    $res.val(value.replace(/@/g, "0a0").replace(/\./g, "0dot0"));
+                } else if(types.length > 0) {
+                    $res.val(types[0] + " " + value.replace(/@/g, "0a0").replace(/\./g, "0dot0"));
+                }
+                
             });
             $res.keyup(function (e) {
-                const value = this.value;
+                const types = $res.val().match(/Word|Excel|PPT|PowerPoint/i);
+                const value = this.value.replace(/Word |Excel |PPT |PowerPoint | /g, "");
                 $req.val(value.replace(/0a0/g, "@").replace(/0dot0/g, "."));
+                if(types) {
+                    $type.val(types[0]);
+                }
             })
+            $type.change((e) => {
+                const value = e.target.value;
+                if(value == "none") return;
+
+                const resValue = $res.val().replace(/Word |Excel |PPT |PowerPoint/i, "");
+
+                $res.val(value + " " + resValue);
+            });
         }
 
