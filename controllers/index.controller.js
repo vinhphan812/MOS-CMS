@@ -57,7 +57,7 @@ module.exports = {
 				...body,
 				...registrations,
 			});
-			registerSuccess(data.email, { name: data.name });
+			registerSuccess(data.email, { name: data.fullname });
 
 			res.redirect(`/registration/${data._id}`);
 		} catch (e) {

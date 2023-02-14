@@ -1,7 +1,7 @@
-const { Times, Exam, Register } = require("../models");
+const { Times, Exam, Register, Banking } = require("../models");
 const IIG = require("./IIG");
 
-const { approveRegister, denyRegister } = require("../services/mail.service");
+const { approveRegister, denyRegister, sendDownloadLink } = require("../services/mail.service");
 
 function checkValidTime(time) {
     if (!time) {
@@ -131,6 +131,21 @@ module.exports.AdminTask = {
 
         await Register.updateOne({ _id }, { $set: { request: "NO_REQUEST", is_approved, reason } });
 
+        return success({ message: "Thành công" });
+    },
+    send_download: async ({ email, _id, type }) => {
+        if (!email)
+            return fail({ message: "email is not required" });
+        const sendType = /WORD/i.test(type) ? "Word" : (/EXCEL/i.test(type) ? "Excel" : /PPT|POWERPOINT/i.test(type) ? "PowerPoint" : "");
+        if (sendType == "") {
+            return fail({ message: "type not correct" });
+        }
+
+        const res = await sendDownloadLink(email, { title: sendType });
+
+        if (res && _id) {
+            await Banking.updateOne({ _id }, { $set: { sendType: type, status: true, email } });
+        }
         return success({ message: "Thành công" });
     }
 };

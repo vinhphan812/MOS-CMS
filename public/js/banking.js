@@ -51,7 +51,6 @@ Onload = () => {
                     if (!value) return "";
                     return `<div class="d-flex justify-content-center">
                                 <img src="/public/images/${ value.toLowerCase() }.svg" width="24" class="me-2"/>
-                                <span>${ value } </span>
                             </div>`;
                 },
             },
@@ -60,45 +59,59 @@ Onload = () => {
 
     table.on("rowClick", (e, row) => {
         const data = row.getData();
-        Swal.fire({
-            buttonsStyling: false,
-            customClass: {
-                confirmButton: 'btn btn-success mx-3 fs-4',
-                denyButton: 'btn btn-danger fs-4 me-3',
-                cancelButton: 'btn btn-secondary fs-4'
-            },
-            grow: "row",
-            input: 'text',
-            inputAttributes: {
-              placeholder: "Email"
-            },
-            title: "Gửi lại Mail",
-            confirmButtonText: "Duyệt",
-            showCancelButton: true,
-            showDenyButton: true,
-            denyButtonText: "Từ chối",
-            cancelButtonText: "Hủy",
-            showLoaderOnConfirm: true,
-            showLoaderOnDeny: true,
-            preDeny: async (result) => {
-                Swal.fire({
-                    title: 'Lý do tù chối duyệt?',
-                    input: 'text',
-                    inputAttributes: {
-                        autocapitalize: 'off'
-                    },
-                    showCancelButton: true,
-                    confirmButtonText: 'Gửi',
-                    cancelButtonText: "Hủy",
-                    showLoaderOnConfirm: true,
-                    preConfirm: async (result) => {
-                        await changeIsApproved(false, data._id, result);
-                    }
-                })
-            },
-            preConfirm: async (result) => {
-                await changeIsApproved(result, data._id);
-            }
-        });
+        sendAlert(data)
     });
+
+    $("#send").click(() => {
+        sendAlert({});
+    })
+}
+
+function sendAlert({ _id, description }) {
+    Swal.fire({
+        buttonsStyling: false,
+        customClass: {
+            confirmButton: 'btn btn-success mx-3 fs-4',
+            denyButton: 'btn btn-danger fs-4 me-3',
+            cancelButton: 'btn btn-secondary fs-4'
+        },
+        // grow: "row",
+        html: `<div class="d-flex flex-column">
+                ${ description ? `<div class="alert alert-warning">${ description }</div>` : "" }
+                <input type="email" id="mail" class="form-control mb-3" placeholder="Email">
+                <select class="form-select" id="type">
+                      <option value="Word">Word</option>
+                      <option value="Excel">Excel</option>
+                      <option value="PowerPoint">PowerPoint</option>
+                </select>
+                </div>`,
+        title: _id ? "Gửi Lại Mail" : "Gửi Mail",
+        confirmButtonText: "Gửi",
+        showCancelButton: true,
+        cancelButtonText: "Hủy",
+        showLoaderOnConfirm: true,
+        didRender: () => {
+            $("#mail").keyup(function (e) {
+                const value = this.value;
+                this.value = value.replace(/0a0/g, "@").replace(/0dot0/g, ".");
+            })
+        },
+        preConfirm: async (result) => {
+            try {
+                const email = $("#mail").val()
+                const type = $("#type").val();
+                await send({ _id, type, email });
+            } catch (e) {
+                Swal.showValidationMessage(e.message);
+            }
+        }
+    });
+}
+
+async function send({ _id, email, type }) {
+    await BaseModel.fetchAPI(BaseModel.task.send_download, { _id, email, type });
+
+    if(_id) {
+        table.dataLoader.load();
+    }
 }
