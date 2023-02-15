@@ -13,6 +13,13 @@ function send(to, data) {
     mailer.send(data.subject, pug.renderFile("./modules/mail.pug", { ...data, APP_NAME, MAIL_CONTACT }), to);
 }
 
+async function sendReport({ message, stack, description }) {
+    return send(ADMIN_MAIL, {
+        subject: `Xảy ra lỗi ${ message }`,
+        content: `<p>${ message }</p>${ description ? `<p>Nội dung: ${ description }</p>` : "" }<code>${ stack || "" }</code>`
+    });
+}
+
 module.exports = {
     registerSuccess: (to, { name }) => {
         send(to, {
@@ -58,13 +65,13 @@ module.exports = {
     },
     denyRegister: (to, { name, reason }) => {
         send(to, {
-            subject: "Yêu cầu đăng ký đã bị tù chối",
+            subject: "Yêu cầu đăng ký đã bị từ chối",
             content: `<p style="margin-top: 0;">Chào <strong>${ name }</strong>,</p><p>Yêu cầu đăng ký thi MOS của đã bị từ chối vì lý do: <strong>${ reason }</strong>.</p>`
         });
     },
     sendDownloadLink: async (to, { title, description }) => {
         if (!to) {
-            this.sendReport({ message: "Không thể lấy được email", description });
+            sendReport({ message: "Không thể lấy được email", description });
             return false;
         }
 
@@ -98,10 +105,5 @@ module.exports = {
         });
         return true;
     },
-    sendReport: async ({ message, stack, description }) => {
-        send(ADMIN_MAIL, {
-            subject: `Xảy ra lỗi ${ message }`,
-            content: `<p>${ message }</p>${ description ? `<p>Nội dung: ${ description }</p>` : "" }<code>${ stack || "" }</code>`
-        });
-    }
+    sendReport,
 }

@@ -17,7 +17,8 @@ const registerSchema = new Schema({
     bankingImage: String,
     is_approved: { type: Boolean, default: false },
     is_delete: { type: Boolean, default: false },
-    request: { type: String, enum: ["REQUEST", "NO_REQUEST"], default: "REQUEST" }
+    request: { type: String, enum: ["REQUEST", "NO_REQUEST"], default: "REQUEST" },
+    address: { type: String, default: "" }
 }, SCHEMA_OPTION);
 
 registerSchema.static({

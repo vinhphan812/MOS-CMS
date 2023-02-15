@@ -111,7 +111,7 @@ module.exports.AdminTask = {
 
             for (const key of subjects) {
                 if (data[key]) {
-                    await Exam.updateOne({ _id: data[key]._id }, { $set: { $inc: { remaining: 1 } } });
+                    await Exam.updateOne({ _id: data[key]._id }, { $inc: { remaining: 1 } });
                 }
             }
         }
