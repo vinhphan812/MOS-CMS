@@ -97,7 +97,9 @@ module.exports = {
 	},
 	sendDownloadLink: async (to, { title, description }) => {
 		if (!to) {
-			sendReport({ message: "Không thể lấy được email", description });
+			const error = new Error("Không thể lấy được email");
+			error.description = description;
+			sendReport(error);
 			return false;
 		}
 

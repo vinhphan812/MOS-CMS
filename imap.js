@@ -136,7 +136,7 @@ imap.once("ready", function () {
 });
 
 imap.once("error", function (err) {
-    sendReport("vinhphan812@gmail.com", err);
+    sendReport(err);
     console.log(err);
     imap.connect();
 });
