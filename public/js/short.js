@@ -99,7 +99,7 @@ function shortForm(_id, realURL, isExpired, expired, accessTimes) {
         html: `<div class="d-flex flex-column">
                     <input type="text" id="realURL" class="form-control mb-3" placeholder="Đường dẫn https://..." value="${ realURL ? realURL : "" }">
                     <div class="form-check form-switch mx-2 mb-3">
-                      <input class="form-check-input" type="checkbox" role="switch" id="isExpired" checked="${ !!isExpired }">
+                      <input class="form-check-input" type="checkbox" role="switch" id="isExpired">
                       <label class="form-check-label" for="isExpired">Tạo thời hạn cho đường dẫn</label>
                     </div>
                     <div id="formRoot"></div>
@@ -111,6 +111,8 @@ function shortForm(_id, realURL, isExpired, expired, accessTimes) {
         showLoaderOnConfirm: true,
         didRender: () => {
             const root = $("#formRoot");
+
+            $("#isExpired").prop("checked", !!isExpired);
 
             if (isExpired) {
                 root.html(`
