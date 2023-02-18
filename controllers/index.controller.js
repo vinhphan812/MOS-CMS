@@ -174,7 +174,7 @@ module.exports = {
         res.render("privacy");
     },
     shortLink: async (req, res, next) => {
-        res.locals.seo.title = "Link rút gọn";
+        res.locals.seo.title = "Link rút gọn - chuyển hướng";
         const { hash } = req.params;
 
         const short = await Short.findOne({ hash });
