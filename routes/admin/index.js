@@ -8,6 +8,7 @@ const {
 const examRouter = require("./exam.route");
 const fixedTimeRoute = require("./fixed_time.route");
 const registrationRoute = require("./registration.route");
+const shortRoute = require("./short.route");
 const { ROLE } = require("../../utils/role.enum");
 
 const router = Router();
@@ -25,5 +26,7 @@ router.use("/exams", examRouter);
 router.get("/banking", bankingPage)
 
 router.use("/registrations", registrationRoute);
+
+router.use("/short", shortRoute);
 
 module.exports = router;

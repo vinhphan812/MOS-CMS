@@ -54,7 +54,8 @@ class BaseModel extends Base {
         checkExam: "check_exam",
         removeTime: "remove_time",
         approved: "approved",
-        send_download: "send_download"
+        send_download: "send_download",
+        short_create_or_update: "short_create_or_update"
     };
 
     static fetchAPI(method, body) {

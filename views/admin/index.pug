@@ -1,31 +1,36 @@
 extends ../layouts/common
 
 block content
-    h1 Quản lý
-    .row.mb-4
-        .col-md-6.mb-4.mb-md-0.h-100
+    h1.mb-4 Quản lý
+    .row.row-cols-1.row-cols-sm-2.row-cols-md-3.justify-content-start.gx-5
+        .col.mb-4
             a.card.align-items-center.text-decoration-none(href="/admin/banking")
                 img.img-fluid.rounded-start(src='/public/images/credit-card.png' width="64px")
                 .card-body.text-center
                     h5.card-title.text-black Chuyển khoản
                     p.card-text.text-muted Quản lý chuyển khoản
 
-        .col-md-6.h-100
+        .col.mb-4
             a.card.align-items-center.text-decoration-none(href="/admin/exams")
                 img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
                 .card-body.text-center
                     h5.card-title.text-black Đợt Đăng Ký
                     p.card-text.text-muted Quản lý đợt đăng ký thi
-    .row
-        .col-md-6.mb-4.mb-md-0
+        .col.mb-4
             a.card.align-items-center.text-decoration-none.h-100(href="/admin/times")
                 img.img-fluid.rounded-start(src='/public/images/resource.svg' width="64px")
                 .card-body.text-center
                     h5.card-title.text-black Giờ Thi
                     p.card-text.text-muted Quản lý các giờ thi cố định
-        .col-md-6
+        .col.mb-4
             a.card.align-items-center.text-decoration-none.p-2.h-100(href="/admin/registrations")
                 img.img-fluid.rounded-start(src='/public/images/registration.png' width="64px")
                 .card-body.text-center
                     h5.card-title.text-black Đăng ký
                     p.card-text.text-muted Quản lý danh sách đăng ký
+        .col.mb-4
+            a.card.align-items-center.text-decoration-none.p-2.h-100(href="/admin/short")
+                img.img-fluid.rounded-start(src='/public/images/link-building.png' width="64px")
+                .card-body.text-center
+                    h5.card-title.text-black Rút gọn
+                    p.card-text.text-muted Đường dẫn rút gọn bản quyền #{APP_NAME}

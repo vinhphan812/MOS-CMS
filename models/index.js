@@ -5,6 +5,7 @@ const Times = require("./times.model");
 const Exam = require("./exam.model");
 const Attributes = require("./attributes.model");
 const Banking = require("./banking.model");
+const Short = require("./short.model");
 
 module.exports = {
     Attributes,
@@ -13,5 +14,6 @@ module.exports = {
     Subject,
     Times,
     Exam,
-    Banking
+    Banking,
+    Short
 };

@@ -6,7 +6,7 @@ const {
     registrationPageSuccess,
     downloadPage,
     lessonsPage,
-    privacyPage
+    privacyPage, shortLink
 } = require("../controllers/index.controller");
 const authRoute = require("./auth.route");
 const adminRoute = require("./admin/");
@@ -33,5 +33,7 @@ router.get("/registration/:id", registrationPageSuccess);
 router.get("/lessons", lessonsPage);
 
 router.get("/privacy", privacyPage);
+
+router.get("/s/:hash", shortLink);
 
 module.exports = router;

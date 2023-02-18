@@ -1,4 +1,4 @@
-const { Times, Exam, Register, Banking } = require("../../models");
+const { Times, Exam, Register, Banking, Short } = require("../../models");
 module.exports = {
 	index: (req, res, next) => {
 		res.json({ success: true, message: "ADMIN" });
@@ -57,4 +57,17 @@ module.exports = {
 			res.json({ success: false, message: e.message });
 		}
 	},
+
+	shortList: async (req, res, next) => {
+		let { page, size } = req.query;
+		size = isNaN(+size) ? 99999 : size;
+		let data = await Short.find({})
+			.sort({ date: -1 })
+			.limit(size)
+			.skip((page - 1) * size);
+
+		const last_page = Math.ceil((await Short.count()) / size);
+
+		res.json({ data, last_page });
+	}
 };
