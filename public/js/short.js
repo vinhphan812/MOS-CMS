@@ -48,8 +48,22 @@ Onload = () => {
 
                     return `${ location.origin }/s/${ value }`;
                 },
+                cellClick: (e, cell) => {
+                    const hash = cell.getData().hash;
+
+                    navigator.clipboard.writeText(location.origin + "/s/" + hash);
+                    Swal.fire({ title: "Copy thành công!", icon: "success", timer: 500, timerProgressBar: true })
+                }
             },
-            { title: "Đường dẫn", field: "realURL", widthGrow: 4 },
+            {
+                title: "Đường dẫn & Chỉnh sửa",
+                field: "realURL",
+                widthGrow: 4,
+                cellClick: (e, cell) => {
+                        const data = cell.getData();
+                        shortForm(data._id, data.realURL, data.isExpired || data.isAccessTime, data.expired, data.accessTimes, data.hash);
+                }
+            },
             {
                 title: "Hạn và lượt", widthGrow: 2, formatter: (cell) => {
                     const { accessTimes, expired, isExpired, isAccessTime } = cell.getData();
@@ -71,15 +85,7 @@ Onload = () => {
                     return displayText;
                 }
             },
-            {
-                title: "Xóa",
-            },
         ],
-    });
-
-    table.on("rowClick", (e, row) => {
-        const data = row.getData();
-        shortForm(data._id, data.realURL, data.isExpired || data.isAccessTime, data.expired, data.accessTimes, data.hash);
     });
 
     $(".add").click(() => {
@@ -117,10 +123,10 @@ function shortForm(_id, realURL, isExpired, expired, accessTimes, hash) {
         didRender: () => {
             const rootForm = `<input type="number" id="accessTime" class="form-control" placeholder="Số lượt truy cập" value="${ accessTimes ? accessTimes : 0 }" min="0">
                         <div class="text-danger my-1">* nếu là 0 sẽ không tính số lượt truy cập</div>
-                        <input type="date" id="expired" class="form-control mb-3" placeholder="Ngày hết hạn" value="${expired ? moment(expired).format("YYYY-MM-DD") : ""}">
+                        <input type="date" id="expired" class="form-control mb-3" placeholder="Ngày hết hạn" value="${ expired ? moment(expired).format("YYYY-MM-DD") : "" }">
                         <div class="text-danger my-1">* nếu hôm nay sẽ không tính ngày hết hạn</div>`;
 
-            const customForm = `<input type="text" id="hash" class="form-control" placeholder="tùy chọn" value="${hash ? hash : "" }" min="0">
+            const customForm = `<input type="text" id="hash" class="form-control" placeholder="tùy chọn" value="${ hash ? hash : "" }" min="0">
                         <div class="text-danger my-1">* nếu để trống hệ thống sẽ tự hash giá trị</div>`
             const $root = $("#formRoot");
             const $custom = $("#formCustom");
@@ -137,7 +143,7 @@ function shortForm(_id, realURL, isExpired, expired, accessTimes, hash) {
                 $root.html("");
             }
 
-            if(hash) {
+            if (hash) {
                 $custom.html(customForm)
             } else {
                 $custom.html(``)
@@ -178,7 +184,7 @@ function shortForm(_id, realURL, isExpired, expired, accessTimes, hash) {
                     ...(_id ? { _id } : {}),
                 };
 
-                if(isCustom) {
+                if (isCustom) {
                     const hash = $("#hash").val();
                     body.hash = hash;
                 }
