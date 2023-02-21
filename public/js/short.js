@@ -79,7 +79,7 @@ Onload = () => {
 
     table.on("rowClick", (e, row) => {
         const data = row.getData();
-        shortForm(data._id, data.realURL, data.isExpired || data.isAccessTime, data.expired, data.accessTimes);
+        shortForm(data._id, data.realURL, data.isExpired || data.isAccessTime, data.expired, data.accessTimes, data.hash);
     });
 
     $(".add").click(() => {
@@ -87,7 +87,7 @@ Onload = () => {
     })
 }
 
-function shortForm(_id, realURL, isExpired, expired, accessTimes) {
+function shortForm(_id, realURL, isExpired, expired, accessTimes, hash) {
     Swal.fire({
         buttonsStyling: false,
         customClass: {
@@ -98,6 +98,11 @@ function shortForm(_id, realURL, isExpired, expired, accessTimes) {
         // grow: "row",
         html: `<div class="d-flex flex-column">
                     <input type="text" id="realURL" class="form-control mb-3" placeholder="Đường dẫn https://..." value="${ realURL ? realURL : "" }">
+                    <div class="form-check form-switch mx-2 mb-3">
+                      <input class="form-check-input" type="checkbox" role="switch" id="isCustom">
+                      <label class="form-check-label" for="isCustom">Đường dẫn tùy chỉnh</label>
+                    </div>
+                    <div id="formCustom" class="mb-4"></div>
                     <div class="form-check form-switch mx-2 mb-3">
                       <input class="form-check-input" type="checkbox" role="switch" id="isExpired">
                       <label class="form-check-label" for="isExpired">Tạo thời hạn cho đường dẫn</label>
@@ -110,44 +115,57 @@ function shortForm(_id, realURL, isExpired, expired, accessTimes) {
         cancelButtonText: "Hủy",
         showLoaderOnConfirm: true,
         didRender: () => {
-            const root = $("#formRoot");
+            const rootForm = `<input type="number" id="accessTime" class="form-control" placeholder="Số lượt truy cập" value="${ accessTimes ? accessTimes : 0 }" min="0">
+                        <div class="text-danger my-1">* nếu là 0 sẽ không tính số lượt truy cập</div>
+                        <input type="date" id="expired" class="form-control mb-3" placeholder="Ngày hết hạn" value="${expired ? moment(expired).format("YYYY-MM-DD") : ""}">
+                        <div class="text-danger my-1">* nếu hôm nay sẽ không tính ngày hết hạn</div>`;
 
-            $("#isExpired").prop("checked", !!isExpired);
+            const customForm = `<input type="text" id="hash" class="form-control" placeholder="tùy chọn" value="${hash ? hash : "" }" min="0">
+                        <div class="text-danger my-1">* nếu để trống hệ thống sẽ tự hash giá trị</div>`
+            const $root = $("#formRoot");
+            const $custom = $("#formCustom");
+            const $isCustom = $("#isCustom");
+            const $isExpired = $("#isExpired");
+
+            $isCustom.prop("checked", hash)
+
+            $isExpired.prop("checked", !!isExpired);
 
             if (isExpired) {
-                root.html(`
-                        <input type="number" id="accessTime" class="form-control" placeholder="Số lượt truy cập" value="${ accessTimes ? accessTimes : 0 }" min="0">
-                        <div class="text-danger my-1">* nếu là 0 sẽ không tính số lượt truy cập</div>
-                        <input type="date" id="expired" class="form-control mb-3" placeholder="Ngày hết hạn" value="${moment(expired).format("YYYY-MM-DD")}">
-                        <div class="text-danger my-1">* nếu hôm nay sẽ không tính ngày hết hạn</div>`)
+                $root.html(rootForm)
             } else {
-                root.html("");
+                $root.html("");
             }
 
-            $("#isExpired").change(function (e) {
+            if(hash) {
+                $custom.html(customForm)
+            } else {
+                $custom.html(``)
+            }
+
+            $isCustom.change(function (e) {
                 if (this.checked) {
-                    root.html(`
-                        <input type="number" id="accessTime" class="form-control" placeholder="Số lượt truy cập" value="0" min="0">
-                        <div class="text-danger my-1">* nếu là 0 sẽ không tính số lượt truy cập</div>
-                        <input type="date" id="expired" class="form-control mb-3" placeholder="Ngày hết hạn">
-                        <div class="text-danger my-1">* nếu hôm nay sẽ không tính ngày hết hạn</div>`)
-                    $("#expired").val(moment().format("YYYY-MM-DD"));
+                    $custom.html(customForm)
                 } else {
-                    root.html("");
+                    $custom.html("");
                 }
             })
-            $("#mail").keyup(function (e) {
-                const value = this.value;
-                this.value = value
-                    .replace(/0a0/g, "@")
-                    .replace(/0dot0/g, ".");
-            });
+
+            $isExpired.change(function (e) {
+                if (this.checked) {
+                    $root.html(rootForm)
+                    $("#expired").val(moment().format("YYYY-MM-DD"));
+                } else {
+                    $root.html("");
+                }
+            })
         },
         preConfirm: async (result) => {
             try {
                 const $url = $("#realURL");
                 const url = $url.val();
                 const isExpired = $("#isExpired").is(":checked");
+                const isCustom = $("#isCustom").is(":checked");
 
                 if (!/^(http(s)?:\/\/)[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/gmi.test(url)) {
                     Swal.showValidationMessage("Định dạng đường dẫn không đúng!");
@@ -159,6 +177,11 @@ function shortForm(_id, realURL, isExpired, expired, accessTimes) {
                     realURL: url,
                     ...(_id ? { _id } : {}),
                 };
+
+                if(isCustom) {
+                    const hash = $("#hash").val();
+                    body.hash = hash;
+                }
 
                 if (isExpired) {
                     const expired = $("#expired").val();

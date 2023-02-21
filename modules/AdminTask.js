@@ -206,11 +206,12 @@ module.exports.AdminTask = {
             _id = data._id;
         }
 
-        const hash = hashShortLink(_id + "|" + body.url);
-
-        body.hash = hash;
+        if(!body.hash) {
+            const hash = hashShortLink(_id + "|" + body.url);
+            body.hash = hash;
+        }
 
         await Short.updateOne({ _id }, { $set: body });
-        return success({ message: "Thành công", data: "https://moskhanhly.com/s/" + hash });
+        return success({ message: "Thành công", data: "https://moskhanhly.com/s/" + body.hash });
     }
 };
