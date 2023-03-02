@@ -301,8 +301,8 @@ Onload = async () => {
 	);
 	inputValidate(
 		"#idCardNumber",
-		(value) => !value || value.length != 12,
-		"Số CCCD/CMND phải đủ 12 số",
+		(value) => !value || value.length != 12 || value.length != 9,
+		"Số CCCD/CMND phải có 9 hoặc 12 số",
 		(status, querySelector) => {
 			validated[querySelector] = status;
 		},
