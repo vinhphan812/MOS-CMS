@@ -41,8 +41,7 @@ module.exports = {
 
 			if (
 				!idCardNumber ||
-				idCardNumber.length != 12 ||
-				idCardNumber.length != 9
+				(idCardNumber.length != 12 && idCardNumber.length != 9)
 			) {
 				errors.push("Số CCCD/CMND có 9 hoặc 12 số.");
 			}
