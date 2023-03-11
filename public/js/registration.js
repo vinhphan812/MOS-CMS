@@ -114,6 +114,14 @@ Onload = async () => {
 		ajaxURL: "/api/exams",
 		dataLoaderLoading: "<span>Đang tải dữ liệu...!</span>",
 		movableColumns: true,
+		rowFormatter: (row) => {
+			const data = row.getData();
+			const el = row.getElement();
+			if (!data.remaning <= 0) {
+				el.classList.add("bg-danger");
+				el.classList.add("text-white");
+			}
+		},
 		columns: [
 			{ title: "ID", field: "_id", visible: false },
 			{
@@ -126,7 +134,15 @@ Onload = async () => {
 				},
 			},
 			{ title: "Giờ Thi", field: "time" },
-			{ title: "Còn Lại", field: "remaining" },
+			{
+				title: "Còn Lại",
+				field: "remaining",
+				formatter: (cell, formatterParams) => {
+					let value = cell.getValue();
+
+					return value || "Đã hết";
+				},
+			},
 			{
 				title: "Chọn",
 				editor: "list",
